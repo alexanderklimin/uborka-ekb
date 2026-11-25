@@ -1,0 +1,41 @@
+---
+// Яндекс Метрика + Вебвизор. Грузится только в production, при заданном ID и после согласия на cookie.
+// Цели: form_submit, phone_click, messenger_click, calc_used. Плюс сохранение UTM и yclid для заявки.
+import { INTEGRATIONS, SITE_MODE } from '../data/site.js';
+const id = SITE_MODE === 'production' ? INTEGRATIONS.metrikaId : null;
+---
+<script is:inline define:vars={{ id }}>
+  (function () {
+    var store = {
+      get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+      set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+    };
+    // UTM и yclid: запоминаем последнюю рекламную метку на 30 дней.
+    var params = new URLSearchParams(location.search);
+    var keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'yclid'];
+    var found = {};
+    keys.forEach(function (k) { if (params.get(k)) found[k] = params.get(k).slice(0, 200); });
+    if (Object.keys(found).length) store.set('attribution', JSON.stringify({ t: Date.now(), v: found }));
+    window.getAttribution = function () {
+      try {
+        var a = JSON.parse(store.get('attribution') || 'null');
+        return a && Date.now() - a.t < 30 * 864e5 ? a.v : {};
+      } catch (e) { return {}; }
+    };
+
+    window.goal = function (name) { if (id && window.ym) window.ym(id, 'reachGoal', name); };
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a');
+      if (!a) return;
+      if (a.href.indexOf('tel:') === 0) window.goal('phone_click');
+      if (a.dataset.goal) window.goal(a.dataset.goal);
+    });
+
+    window.loadMetrika = function () {
+      if (!id || window.ym) return;
+      (function (m, e, t, r, i, k, a) { m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments); }; m[i].l = 1 * new Date(); k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a); })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js', 'ym');
+      window.ym(id, 'init', { clickmap: true, trackLinks: true, accurateTrackBounce: true, webvisor: true });
+    };
+    if (store.get('cookie-consent') === 'all') window.loadMetrika();
+  })();
+</script>

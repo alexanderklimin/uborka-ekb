@@ -1,0 +1,25 @@
+{
+  "name": "uborka-ekb-site",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "build:preview": "SITE_MODE=preview astro build && node scripts/preview-headers.mjs",
+    "build:production": "SITE_MODE=production astro build && node scripts/check-placeholders.mjs",
+    "check": "node scripts/check-placeholders.mjs",
+    "test": "node --test src/lib/*.test.js",
+    "todo": "node scripts/check-placeholders.mjs --report"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "3.7.5",
+    "astro": "7.4.12"
+  },
+  "devDependencies": {
+    "wrangler": "4.164.0"
+  }
+}

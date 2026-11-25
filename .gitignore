@@ -1,0 +1,8 @@
+.env
+.env.*
+!.env.example
+node_modules/
+site/dist/
+site/.astro/
+functions/**/node_modules/
+*.zip

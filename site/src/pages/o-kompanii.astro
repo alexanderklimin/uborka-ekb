@@ -1,0 +1,16 @@
+---
+import Base from '../layouts/Base.astro';
+import Todo from '../components/Todo.astro';
+import { BRAND_NAME } from '../data/site.js';
+---
+<Base title={`О компании ${BRAND_NAME}`} description="Кто мы, кто убирает, какие средства и оборудование используем."
+  crumbs={[{ name: 'Главная', path: '/' }, { name: 'О компании', path: '/o-kompanii/' }]}>
+  <div class="wrap">
+    <h1>О компании</h1>
+    <Todo inline={false} label="История в 3–5 предложениях от владельца: кто, с какого года, почему (без выдуманных цифр)" />
+    <h2>Команда</h2>
+    <Todo inline={false} label="Фото настоящей команды (с согласия людей на публикацию)" />
+    <h2>Средства и оборудование</h2>
+    <Todo inline={false} label="Чем работаем: пылесосы, парогенератор, химия (марки), гипоаллергенные средства?" />
+  </div>
+</Base>

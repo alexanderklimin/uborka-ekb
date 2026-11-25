@@ -1,0 +1,94 @@
+---
+import Base from '../layouts/Base.astro';
+import Todo from '../components/Todo.astro';
+import Calculator from '../components/Calculator.astro';
+import { SERVICES, serviceBySlug, priceFrom } from '../data/services.js';
+import { BRAND, BRAND_NAME, CONTACTS, LEGAL, AREA } from '../data/site.js';
+import { localBusiness } from '../lib/seo.js';
+import { rub } from '../lib/format.js';
+const site = Astro.site!.href.replace(/\/$/, '');
+const flat = [serviceBySlug('podderzhivayushchaya-uborka'), serviceBySlug('generalnaya-uborka')];
+---
+<Base
+  title={`Уборка квартир и офисов в Екатеринбурге — ${BRAND_NAME}`}
+  description="Поддерживающая и генеральная уборка квартир, уборка после ремонта, мытьё окон, офисы и коттеджи в Екатеринбурге. Цена за квартиру заранее, калькулятор, договор."
+  jsonLd={[localBusiness({ site, brand: BRAND_NAME, contacts: CONTACTS, legal: LEGAL, area: AREA })]}
+>
+  <div class="wrap">
+    <section class="hero">
+      <h1>Уборка квартир и офисов в Екатеринбурге</h1>
+      <p class="hero-sub">Называем цену за квартиру до выезда. Приезжаем со своими средствами и инвентарём. Если что-то не понравится — переуберём.</p>
+      <div class="hero-cta">
+        <a class="btn" href="#zayavka">Оставить заявку</a>
+        <a class="btn btn-ghost" href="#kalkulyator">Рассчитать стоимость</a>
+      </div>
+    </section>
+
+    <h2>Цена за квартиру</h2>
+    <table class="room-prices">
+      <thead><tr><th></th><th>1-комн.</th><th>2-комн.</th><th>3-комн.</th></tr></thead>
+      <tbody>
+        {flat.map((s) => (
+          <tr>
+            <th scope="row"><a href={`/${s.slug}/`}>{s.short}</a></th>
+            {[1, 2, 3].map((n) => <td>{s.price.rooms[n] != null ? `от ${rub(s.price.rooms[n])}` : <Todo label="цена" />}</td>)}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+
+    <h2>Услуги</h2>
+    <div class="cards">
+      {SERVICES.map((s) => {
+        const from = priceFrom(s);
+        return (
+          <a class="card" href={`/${s.slug}/`}>
+            <span class="card-title">{s.short}</span>
+            <span class="card-price">{from ? `от ${rub(from.value)}${from.suffix}` : <Todo label="цена" />}</span>
+          </a>
+        );
+      })}
+    </div>
+
+    <Calculator />
+
+    <h2>Как мы работаем</h2>
+    <ol class="steps">
+      <li><b>Заявка.</b> Звоните, пишите в мессенджер или оставьте заявку на сайте.</li>
+      <li><b>Цена заранее.</b> Уточняем площадь и пожелания, называем стоимость до выезда.</li>
+      <li><b>Уборка.</b> Приезжаем в согласованное время со своими средствами и инвентарём.</li>
+      <li><b>Приёмка.</b> Вы проверяете результат и оплачиваете после уборки.</li>
+    </ol>
+    <Todo inline={false} label="Подтвердить порядок работы: оплата после уборки? предоплата? как передаём ключи?" />
+
+    <h2>Почему нам доверяют</h2>
+    <Todo inline={false} label="Только факты от заказчика: фото команды, своё оборудование, гарантия переуборки (срок), договор, ответственность за имущество. Без «N лет на рынке», пока заказчик не подтвердит." />
+
+    <h2>Отзывы</h2>
+    <Todo inline={false} label="Настоящие отзывы + ссылки на карточки в Яндекс Картах и 2ГИС" />
+
+    <h2>Куда выезжаем</h2>
+    <p>Работаем по всему Екатеринбургу. Пригороды: {AREA.suburbs ? AREA.suburbs.join(', ') : <Todo label="список пригородов" />}. Выезд за город: {AREA.suburbFee ?? <Todo label="условия" />}.</p>
+  </div>
+</Base>
+
+<style>
+  .hero { padding: 32px 0 8px; }
+  .hero-sub { font-size: 20px; max-width: 720px; color: var(--c-muted); }
+  .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+  .room-prices { border-collapse: collapse; width: 100%; max-width: 720px; }
+  .room-prices th, .room-prices td { padding: 12px 8px; border-bottom: 1px solid var(--c-line); text-align: left; }
+  .room-prices td { font-weight: 700; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+  .card { display: flex; flex-direction: column; gap: 6px; padding: 18px; border: 1px solid var(--c-line); border-radius: var(--r); text-decoration: none; color: var(--c-text); }
+  .card:hover { border-color: var(--c-accent); }
+  .card-title { font-weight: 700; font-size: 18px; }
+  .card-price { color: var(--c-accent); font-weight: 600; }
+  .steps { padding-left: 20px; } .steps li { margin: 8px 0; }
+  @media (max-width: 560px) {
+    .room-prices { font-size: 13px; }
+    .room-prices th, .room-prices td { padding: 10px 3px; }
+    .room-prices th[scope='row'] { width: 34%; }
+    .room-prices .todo { white-space: normal; }
+  }
+</style>

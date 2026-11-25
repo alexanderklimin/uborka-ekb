@@ -1,0 +1,11 @@
+---
+import Base from '../layouts/Base.astro';
+import { SERVICES } from '../data/services.js';
+---
+<Base title="Страница не найдена" description="Такой страницы нет." noindex form={false}>
+  <div class="wrap">
+    <h1>Страница не найдена</h1>
+    <p>Возможно, её переместили. Вот что есть на сайте:</p>
+    <ul>{SERVICES.map((s) => <li><a href={`/${s.slug}/`}>{s.short}</a></li>)}<li><a href="/ceny/">Цены</a></li><li><a href="/kontakty/">Контакты</a></li></ul>
+  </div>
+</Base>

@@ -1,0 +1,108 @@
+---
+// Заявка: POST JSON на HTTP-триггер Cloud Function (functions/lead), функция шлёт письмо.
+// Согласие на ПДн отдельной галочкой со ссылкой на отдельный документ /soglasie-pd/ (152-ФЗ, ред. с 01.09.2025).
+// В превью и без endpoint форма ничего не отправляет.
+import { SERVICES } from '../data/services.js';
+import { INTEGRATIONS, SITE_MODE } from '../data/site.js';
+interface Props { service?: string; title?: string }
+const { service, title = 'Оставьте заявку — перезвоним и назовём точную цену' } = Astro.props;
+const endpoint = SITE_MODE === 'production' ? INTEGRATIONS.leadEndpoint : null;
+const captchaKey = SITE_MODE === 'production' ? INTEGRATIONS.smartCaptchaKey : null;
+---
+<section class="lead" id="zayavka">
+  <h2>{title}</h2>
+  <form class="lead-form" data-endpoint={endpoint ?? ''} data-metrika={INTEGRATIONS.metrikaId ?? ''} novalidate>
+    <div class="lead-grid">
+      <label>Имя<input name="name" autocomplete="given-name" maxlength="80" /></label>
+      <label>Телефон *<input name="phone" type="tel" autocomplete="tel" inputmode="tel" required maxlength="30" placeholder="+7" /></label>
+      <label>Услуга
+        <select name="service">
+          <option value="">Не знаю, подскажите</option>
+          {SERVICES.map((s) => <option value={s.slug} selected={s.slug === service}>{s.short}</option>)}
+        </select>
+      </label>
+      <label>Площадь, м²<input name="area" type="number" inputmode="numeric" min="0" max="5000" /></label>
+      <label>Желаемая дата<input name="date" type="date" /></label>
+      <label class="lead-wide">Комментарий<textarea name="comment" rows="3" maxlength="1000"></textarea></label>
+    </div>
+    <label class="hp" aria-hidden="true">Не заполняйте<input name="website" tabindex="-1" autocomplete="off" /></label>
+    <label class="consent">
+      <input type="checkbox" name="consent" required />
+      <span>Даю <a href="/soglasie-pd/" target="_blank">согласие на обработку персональных данных</a> в соответствии с <a href="/politika-pd/" target="_blank">политикой</a>.</span>
+    </label>
+    {captchaKey && <div class="smart-captcha" data-sitekey={captchaKey}></div>}
+    <button class="btn" type="submit">Отправить заявку</button>
+    <p class="lead-status" role="status"></p>
+  </form>
+  {captchaKey && <script is:inline src="https://smartcaptcha.yandexcloud.net/captcha.js" defer></script>}
+</section>
+
+<script>
+  for (const form of document.querySelectorAll<HTMLFormElement>('.lead-form')) {
+    const status = form.querySelector('.lead-status') as HTMLElement;
+    const say = (text: string, ok = false) => { status.textContent = text; status.dataset.ok = String(ok); };
+
+    document.addEventListener('calc:apply', (e: any) => {
+      const { service, area, summary } = e.detail;
+      (form.elements.namedItem('service') as HTMLSelectElement).value = service;
+      if (area) (form.elements.namedItem('area') as HTMLInputElement).value = area;
+      const comment = form.elements.namedItem('comment') as HTMLTextAreaElement;
+      comment.value = `Калькулятор: ${summary}`;
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      const phoneDigits = String(fd.get('phone') ?? '').replace(/\D/g, '');
+      if (phoneDigits.length < 10) return say('Проверьте номер телефона.');
+      if (!fd.get('consent')) return say('Нужно согласие на обработку персональных данных.');
+
+      const endpoint = form.dataset.endpoint;
+      if (!endpoint) return say('Это превью: форма пока ничего не отправляет.');
+
+      const payload: Record<string, unknown> = Object.fromEntries(fd.entries());
+      payload.consent = true;
+      payload.page = location.href;
+      payload.attribution = (window as any).getAttribution?.() ?? {};
+      const ymId = Number(form.dataset.metrika);
+      const ym = (window as any).ym;
+      if (ymId && ym) {
+        payload.ym_client_id = await new Promise((resolve) => {
+          const t = setTimeout(() => resolve(null), 800);
+          ym(ymId, 'getClientID', (id: string) => { clearTimeout(t); resolve(id); });
+        });
+      }
+      payload.captcha = (form.querySelector('[name="smart-token"]') as HTMLInputElement | null)?.value ?? '';
+
+      const button = form.querySelector('button') as HTMLButtonElement;
+      button.disabled = true;
+      say('Отправляем…');
+      try {
+        const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        if (!res.ok) throw new Error(String(res.status));
+        say('Спасибо! Заявка отправлена, скоро перезвоним.', true);
+        form.reset();
+        (window as any).goal?.('form_submit');
+      } catch {
+        say('Не получилось отправить. Позвоните нам или напишите в мессенджер.');
+      } finally {
+        button.disabled = false;
+      }
+    });
+  }
+</script>
+
+<style>
+  .lead { background: var(--c-accent-2); border-radius: var(--r); padding: 24px; margin: 40px 0; scroll-margin-top: 90px; }
+  .lead h2 { margin-top: 0; }
+  .lead-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .lead label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: var(--c-muted); }
+  .lead input, .lead select, .lead textarea { width: 100%; min-width: 0; font: 16px var(--font); padding: 10px; border: 1px solid var(--c-line); border-radius: 8px; background: #fff; color: var(--c-text); }
+  .lead-wide { grid-column: 1 / -1; }
+  .lead .consent { flex-direction: row; align-items: flex-start; gap: 8px; margin: 16px 0; color: var(--c-text); }
+  .lead .consent input { margin-top: 4px; width: 18px; height: 18px; flex: none; }
+  .hp { position: absolute; left: -9999px; }
+  .lead-status { min-height: 1.5em; margin: 12px 0 0; font-weight: 600; color: #a33; }
+  .lead-status[data-ok='true'] { color: var(--c-accent); }
+  @media (max-width: 700px) { .lead-grid { grid-template-columns: minmax(0, 1fr); } .lead { padding: 16px; } }
+</style>

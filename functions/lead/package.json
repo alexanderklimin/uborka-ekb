@@ -1,0 +1,8 @@
+{
+  "name": "lead-function",
+  "type": "module",
+  "private": true,
+  "main": "index.js",
+  "scripts": { "test": "node --test" },
+  "dependencies": { "nodemailer": "6.9.16" }
+}

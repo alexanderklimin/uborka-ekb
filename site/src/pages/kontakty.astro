@@ -1,0 +1,42 @@
+---
+import Base from '../layouts/Base.astro';
+import Todo from '../components/Todo.astro';
+import { CONTACTS, LEGAL, AREA } from '../data/site.js';
+import { telHref } from '../lib/format.js';
+const tel = telHref(CONTACTS.phoneE164 ?? CONTACTS.phone);
+const rows = [
+  ['Телефон', tel ? `<a href="${tel}">${CONTACTS.phone}</a>` : null, 'Телефон'],
+  ['Почта', CONTACTS.email ? `<a href="mailto:${CONTACTS.email}">${CONTACTS.email}</a>` : null, 'Почта'],
+  ['Telegram', CONTACTS.telegram ? `<a href="${CONTACTS.telegram}" data-goal="messenger_click">написать</a>` : null, 'Telegram'],
+  ['WhatsApp', CONTACTS.whatsapp ? `<a href="${CONTACTS.whatsapp}" data-goal="messenger_click">написать</a>` : null, 'WhatsApp'],
+  ['MAX', CONTACTS.max ? `<a href="${CONTACTS.max}" data-goal="messenger_click">написать</a>` : null, 'MAX'],
+  ['Часы работы', CONTACTS.hours, 'Часы работы'],
+  ['Адрес', CONTACTS.address, 'Адрес или «работаем на выезде»'],
+];
+---
+<Base title="Контакты и реквизиты" description="Телефон, мессенджеры, часы работы и реквизиты. Уборка квартир и офисов в Екатеринбурге."
+  crumbs={[{ name: 'Главная', path: '/' }, { name: 'Контакты', path: '/kontakty/' }]}>
+  <div class="wrap">
+    <h1>Контакты</h1>
+    <dl class="contacts">
+      {rows.map(([k, v, todo]) => <><dt>{k}</dt><dd>{v ? <Fragment set:html={v} /> : <Todo label={todo} />}</dd></>)}
+    </dl>
+    <p>Работаем по Екатеринбургу{AREA.suburbs ? ` и пригородам: ${AREA.suburbs.join(', ')}` : ''}.</p>
+    <Todo inline={false} label="Карта: Яндекс Карты (виджет организации) после создания карточки в Яндекс Бизнесе" />
+
+    <h2>Реквизиты</h2>
+    <dl class="contacts">
+      <dt>Исполнитель</dt><dd>{LEGAL.fullName ?? <Todo label="ФИО ИП полностью" />}</dd>
+      <dt>ИНН</dt><dd>{LEGAL.inn ?? <Todo label="ИНН" />}</dd>
+      <dt>ОГРНИП</dt><dd>{LEGAL.ogrnip ?? <Todo label="ОГРНИП" />}</dd>
+      <dt>Адрес</dt><dd>{LEGAL.address ?? <Todo label="адрес для реквизитов" />}</dd>
+      <dt>Налогообложение</dt><dd>{LEGAL.tax}</dd>
+    </dl>
+    <p>Для юрлиц работаем по договору, оплата по счёту, закрывающие документы каждый месяц.</p>
+  </div>
+</Base>
+<style>
+  .contacts { display: grid; grid-template-columns: max-content 1fr; gap: 8px 24px; }
+  .contacts dt { color: var(--c-muted); } .contacts dd { margin: 0; font-weight: 600; }
+  @media (max-width: 560px) { .contacts { grid-template-columns: 1fr; gap: 2px; } .contacts dd { margin-bottom: 10px; } }
+</style>

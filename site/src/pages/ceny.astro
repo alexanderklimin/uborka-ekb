@@ -1,0 +1,33 @@
+---
+import Base from '../layouts/Base.astro';
+import Todo from '../components/Todo.astro';
+import Calculator from '../components/Calculator.astro';
+import { SERVICES, priceFrom } from '../data/services.js';
+import { AREA } from '../data/site.js';
+import { rub } from '../lib/format.js';
+---
+<Base title="Цены на уборку квартир и офисов в Екатеринбурге" description="Прайс на уборку квартир, генеральную уборку, уборку после ремонта, мытьё окон, офисы и коттеджи. Цены «от», что входит, минимальный заказ."
+  crumbs={[{ name: 'Главная', path: '/' }, { name: 'Цены', path: '/ceny/' }]}>
+  <div class="wrap">
+    <h1>Цены на уборку</h1>
+    <p>Цены указаны «от». Точную стоимость называем до выезда, когда узнаем площадь и пожелания. Состав работ — на странице каждой услуги.</p>
+    <table class="price-list">
+      <thead><tr><th>Услуга</th><th>Цена</th></tr></thead>
+      <tbody>
+        {SERVICES.map((s) => { const f = priceFrom(s); return (
+          <tr><td><a href={`/${s.slug}/`}>{s.short}</a></td><td>{f ? `от ${rub(f.value)}${f.suffix}` : <Todo label="цена" />}</td></tr>
+        ); })}
+      </tbody>
+    </table>
+    <h2>Дополнительные услуги</h2>
+    <Todo inline={false} label="Доп. услуги и цены: духовка, холодильник внутри, балкон, глажка и т. д. — только то, что делаем" />
+    <p>Минимальный заказ: {AREA.minOrder != null ? rub(AREA.minOrder) : <Todo label="сумма" />}. Выезд за город: {AREA.suburbFee ?? <Todo label="условия" />}.</p>
+    <Calculator />
+  </div>
+</Base>
+<style>
+  .price-list { border-collapse: collapse; width: 100%; max-width: 640px; }
+  .price-list th, .price-list td { padding: 10px 0; border-bottom: 1px solid var(--c-line); text-align: left; }
+  .price-list td:last-child, .price-list th:last-child { text-align: right; }
+  .price-list td:last-child { font-weight: 700; }
+</style>

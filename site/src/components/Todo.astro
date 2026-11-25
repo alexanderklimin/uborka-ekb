@@ -1,0 +1,8 @@
+---
+// Заглушка для данных, которые должен дать заказчик.
+// В превью видна жёлтым, сборка production с ней падает (scripts/check-placeholders.mjs).
+interface Props { label: string; inline?: boolean }
+const { label, inline = true } = Astro.props;
+const Tag = inline ? 'mark' : 'div';
+---
+<Tag class="todo" data-todo={label} title="Нужно от заказчика">⚑ {label}</Tag>

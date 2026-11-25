@@ -1,0 +1,115 @@
+---
+import Base from '../layouts/Base.astro';
+import Todo from '../components/Todo.astro';
+import Calculator from '../components/Calculator.astro';
+import { SERVICES, serviceBySlug, priceFrom } from '../data/services.js';
+import { BRAND_NAME, AREA } from '../data/site.js';
+import { service as serviceLd, faqPage } from '../lib/seo.js';
+import { rub } from '../lib/format.js';
+
+export function getStaticPaths() {
+  return SERVICES.map((s) => ({ params: { service: s.slug } }));
+}
+const s = serviceBySlug(Astro.params.service)!;
+const site = Astro.site!.href.replace(/\/$/, '');
+const url = new URL(`/${s.slug}/`, Astro.site).href;
+const from = priceFrom(s);
+const p = s.price ?? {};
+const roomRows = p.rooms ? [1, 2, 3].map((n) => ({ label: `${n}-комнатная`, value: p.rooms[n] })) : [];
+const related = s.related.map(serviceBySlug).filter(Boolean);
+---
+<Base
+  title={s.title}
+  description={s.description}
+  service={s.slug}
+  crumbs={[{ name: 'Главная', path: '/' }, { name: s.short, path: `/${s.slug}/` }]}
+  jsonLd={[serviceLd({ site, brand: BRAND_NAME, name: s.h1, description: s.description, url, price: from }), faqPage(s.faq)]}
+>
+  <div class="wrap">
+    <section class="svc-hero">
+      <h1>{s.h1}</h1>
+      <p class="price-from">
+        {from ? <>от {rub(from.value)}{from.suffix}</> : <Todo label="Цена «от»" />}
+      </p>
+      <p class="lead-text">{s.intro}</p>
+      <div class="svc-facts">
+        <span>Длительность: {s.duration ?? <Todo label="сколько часов" />}</span>
+        <span>Бригада: {s.team ?? <Todo label="сколько человек" />}</span>
+        <span>Средства и инвентарь: наши</span>
+      </div>
+      <a class="btn" href="#zayavka">Оставить заявку</a>
+      <a class="btn btn-ghost" href="#kalkulyator">Рассчитать стоимость</a>
+    </section>
+
+    {s.draft && <Todo inline={false} label="Состав работ и ответы — черновик. Проверить с заказчиком: что делаем, что нет." />}
+
+    <h2>Цены</h2>
+    <table class="prices">
+      <tbody>
+        {roomRows.map((r) => <tr><td>{r.label}</td><td>{r.value != null ? `от ${rub(r.value)}` : <Todo label="цена" />}</td></tr>)}
+        {'perM2' in p && <tr><td>За 1 м²</td><td>{p.perM2 != null ? `от ${rub(p.perM2)}` : <Todo label="цена за м²" />}</td></tr>}
+        {p.unit && <tr><td>{p.unit.label[0].toUpperCase() + p.unit.label.slice(1)}</td><td>{p.unit.price != null ? `от ${rub(p.unit.price)}` : <Todo label="цена" />}</td></tr>}
+        {'balcony' in p && <tr><td>Балкон или лоджия</td><td>{p.balcony != null ? `от ${rub(p.balcony)}` : <Todo label="цена" />}</td></tr>}
+        {'subscription' in p && <tr><td>Абонемент</td><td>{p.subscription ?? <Todo label="условия абонемента" />}</td></tr>}
+        {'monthly' in p && <tr><td>Регулярная уборка, в месяц</td><td>{p.monthly != null ? `от ${rub(p.monthly)}` : <Todo label="цена в месяц" />}</td></tr>}
+      </tbody>
+    </table>
+    <p class="muted">Минимальный заказ: {AREA.minOrder != null ? rub(AREA.minOrder) : <Todo label="сумма" />}. Выезд за город: {AREA.suburbFee ?? <Todo label="условия" />}.</p>
+
+    <h2>Что входит</h2>
+    <div class="checklist">
+      {s.checklist.map((block) => (
+        <div class="check-block">
+          <h3>{block.area}</h3>
+          {block.items ? <ul>{block.items.map((i) => <li>{i}</li>)}</ul> : <Todo inline={false} label="состав работ" />}
+        </div>
+      ))}
+    </div>
+    <h3>Не входит</h3>
+    {s.notIncluded ? <ul class="not-included">{s.notIncluded.map((i) => <li>{i}</li>)}</ul> : <Todo inline={false} label="что не входит" />}
+
+    <Calculator selected={s.slug} />
+
+    <h2>Фото работ</h2>
+    <Todo inline={false} label="3–5 фото «до/после» с наших объектов (не стоковые)" />
+
+    <h2>Отзывы</h2>
+    <Todo inline={false} label="Настоящие отзывы со ссылками на Яндекс Карты / 2ГИС. Не выдумывать." />
+
+    <h2>Вопросы и ответы</h2>
+    <div class="faq">
+      {s.faq.map(({ q, a }) => (
+        <details>
+          <summary>{q}</summary>
+          {a ? <p>{a}</p> : <Todo inline={false} label="ответ" />}
+        </details>
+      ))}
+    </div>
+
+    {related.length > 0 && (
+      <>
+        <h2>Ещё может пригодиться</h2>
+        <ul class="related">{related.map((r) => <li><a href={`/${r.slug}/`}>{r.short}</a></li>)}</ul>
+      </>
+    )}
+  </div>
+</Base>
+
+<style>
+  .svc-hero { padding: 24px 0 8px; }
+  .price-from { font-size: 28px; font-weight: 800; color: var(--c-accent); margin: 0 0 12px; }
+  .lead-text { font-size: 19px; max-width: 760px; }
+  .svc-facts { display: flex; flex-wrap: wrap; gap: 8px 20px; color: var(--c-muted); font-size: 15px; margin: 16px 0 20px; }
+  .svc-hero .btn { margin: 0 8px 8px 0; }
+  .prices { border-collapse: collapse; width: 100%; max-width: 560px; }
+  .prices td { padding: 10px 0; border-bottom: 1px solid var(--c-line); }
+  .prices td:last-child { text-align: right; font-weight: 700; }
+  .muted { color: var(--c-muted); font-size: 15px; }
+  .checklist { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .check-block { background: var(--c-soft); border-radius: var(--r); padding: 16px 20px; }
+  .check-block ul, .not-included { padding-left: 20px; margin: 0; }
+  .check-block li { margin: 4px 0; }
+  .faq details { border-bottom: 1px solid var(--c-line); padding: 12px 0; }
+  .faq summary { font-weight: 600; cursor: pointer; }
+  .related { display: flex; flex-wrap: wrap; gap: 8px 20px; padding: 0; list-style: none; }
+</style>

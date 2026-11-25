@@ -1,0 +1,79 @@
+---
+import { SERVICES, serviceBySlug } from '../data/services.js';
+import { AREA } from '../data/site.js';
+interface Props { selected?: string }
+const { selected = 'uborka-kvartir' } = Astro.props;
+const data = {
+  services: SERVICES.map(({ slug, short, price }) => ({ slug, short, price })),
+  windowPrice: serviceBySlug('myte-okon')?.price?.unit?.price ?? null,
+  minOrder: AREA.minOrder,
+};
+---
+<section class="calc" id="kalkulyator" data-calc={JSON.stringify(data)}>
+  <h2>Калькулятор стоимости</h2>
+  <div class="calc-grid">
+    <label>Услуга
+      <select name="service">{SERVICES.map((s) => <option value={s.slug} selected={s.slug === selected}>{s.short}</option>)}</select>
+    </label>
+    <label>Комнат
+      <select name="rooms"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4 и больше</option></select>
+    </label>
+    <label>Площадь, м²
+      <input name="area" type="number" inputmode="numeric" min="0" max="2000" placeholder="например, 54" />
+    </label>
+    <label>Окон помыть
+      <input name="windows" type="number" inputmode="numeric" min="0" max="50" value="0" />
+    </label>
+  </div>
+  <div class="calc-result" aria-live="polite">
+    <p class="calc-total"></p>
+    <ul class="calc-lines"></ul>
+  </div>
+  <a class="btn" href="#zayavka" data-calc-apply>Оставить заявку с этим расчётом</a>
+  <p class="calc-note">Цена в калькуляторе совпадает с итоговой, если площадь и состав работ подтвердились при уборке.</p>
+</section>
+
+<script>
+  import { calculate } from '../lib/calc.js';
+  import { rub } from '../lib/format.js';
+  for (const root of document.querySelectorAll<HTMLElement>('[data-calc]')) {
+    const data = JSON.parse(root.dataset.calc!);
+    const $ = <T extends Element>(s: string) => root.querySelector(s) as T;
+    const fields = ['service', 'rooms', 'area', 'windows'].map((n) => $(`[name="${n}"]`) as HTMLInputElement);
+    let used = false;
+    let summary = '';
+    const render = () => {
+      const [service, rooms, area, windows] = fields.map((f) => f.value);
+      const svc = data.services.find((s: any) => s.slug === service);
+      const r = calculate({ service: svc, rooms: Number(rooms), area: Number(area), windows: Number(windows), windowPrice: data.windowPrice, minOrder: data.minOrder });
+      $<HTMLElement>('.calc-total').textContent = r.total !== null ? `Итого: ${rub(r.total)}` : `Не хватает: ${r.missing.join(', ')}`;
+      $<HTMLElement>('.calc-lines').innerHTML = '';
+      for (const l of r.lines) {
+        const li = document.createElement('li');
+        li.textContent = `${l.label} — ${rub(l.sum)}`;
+        $<HTMLElement>('.calc-lines').append(li);
+      }
+      summary = `${svc.short}, ${rooms === '4' ? '4+' : rooms} комн.${area ? `, ${area} м²` : ''}${Number(windows) ? `, окон: ${windows}` : ''}${r.total !== null ? `, расчёт ${r.total} ₽` : ''}`;
+    };
+    fields.forEach((f) => f.addEventListener('input', () => {
+      render();
+      if (!used) { used = true; (window as any).goal?.('calc_used'); }
+    }));
+    root.querySelector('[data-calc-apply]')!.addEventListener('click', () => {
+      document.dispatchEvent(new CustomEvent('calc:apply', { detail: { service: fields[0].value, area: fields[2].value, summary } }));
+    });
+    render();
+  }
+</script>
+
+<style>
+  .calc { background: var(--c-soft); border-radius: var(--r); padding: 24px; margin: 32px 0; }
+  .calc h2 { margin-top: 0; }
+  .calc-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .calc label { display: flex; flex-direction: column; font-size: 14px; color: var(--c-muted); gap: 4px; }
+  .calc select, .calc input { width: 100%; min-width: 0; font: 16px var(--font); padding: 10px; border: 1px solid var(--c-line); border-radius: 8px; background: #fff; color: var(--c-text); }
+  .calc-total { font-size: 24px; font-weight: 800; margin: 0 0 4px; }
+  .calc-lines { margin: 0 0 16px; padding-left: 20px; color: var(--c-muted); font-size: 15px; }
+  .calc-note { font-size: 13px; color: var(--c-muted); margin: 12px 0 0; }
+  @media (max-width: 700px) { .calc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .calc { padding: 16px; } }
+</style>
