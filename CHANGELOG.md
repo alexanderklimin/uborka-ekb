@@ -14,3 +14,4 @@
 - Всё, что даёт заказчик (название, телефон, реквизиты, цены, сроки, отзывы, фото), — null в src/data/site.js и services.js, на страницах жёлтые заглушки ⚑. `npm run build:production` падает, пока они есть (сейчас 281). Чек-листы работ — черновик, согласовать.
 - functions/lead: Cloud Function (Node 22) заявка → письмо по SMTP; проверка телефона, согласия, origin, капчи; данные заявки в логи не пишутся. Не развёрнута.
 - Проверки: 12 тестов сайта, 6 тестов функции; вёрстка без горизонтальной прокрутки на 360 px.
+- Git: приватный репозиторий alexanderklimin/uborka-ekb, deploy key /root/.ssh/uborka_ekb_deploy (хост github-uborka-ekb). Первый push в main. Превью: Cloudflare Workers Builds (root site, build:preview, wrangler deploy) — подключает пользователь.
