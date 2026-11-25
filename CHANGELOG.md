@@ -19,3 +19,4 @@
 - wrangler.jsonc перенесён в корень с build.command: превью собирается при пустых Root directory и Build command в панели Cloudflare (проверено dry-run на чистом клоне, wrangler 4.168.0). .nvmrc = 22.
 - Структура как в hojapedia/tallerpedia: Astro и wrangler.jsonc в корне репозитория (папки site/ больше нет), assets ./dist, .node-version 22. `npm run build` = превью (noindex), `npm run build:production` = Yandex Cloud. Workers Builds: команда сборки `npm run build`, деплой `npx wrangler deploy`.
 - Имя воркера uborka-ekb (как проект в панели Cloudflare). Превью: uborka-ekb.<аккаунт>.workers.dev.
+- Превью https://uborka-ekb.alexander-klimin.workers.dev проверено: 15 страниц отдают 200, X-Robots-Tag и meta noindex есть, robots Disallow: /, canonical нет, 404 работает, без слеша 307 на слеш. Метрика не грузится (ID не задан).
