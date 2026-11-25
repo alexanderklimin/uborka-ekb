@@ -40,6 +40,7 @@ const related = s.related.map(serviceBySlug).filter(Boolean);
       <div>
         <span class="eyebrow"><Icon name={s.icon} size={16} /> {s.short}</span>
         <h1>{s.h1}</h1>
+        <p class="m-price">{from ? <>от {rub(from.value)}{from.suffix}</> : <Todo label="цена" />} <a href="#kalkulyator">рассчитать</a></p>
         <p class="lead-text">{s.intro}</p>
         <ul class="facts">
           <li><Icon name="clock" size={18} /><span><small>Длительность</small>{s.duration ?? <Todo label="часы" />}</span></li>
@@ -177,13 +178,21 @@ const related = s.related.map(serviceBySlug).filter(Boolean);
   .related small { color: var(--muted); font-size: 14px; }
   .rel-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--mint); color: var(--primary); flex: none; }
 
+  .m-price { display: none; }
   @media (max-width: 900px) {
     .svc-hero-grid { grid-template-columns: minmax(0, 1fr); gap: 28px; }
   }
   @media (max-width: 560px) {
     .block { margin-top: 64px; }
-    .lead-text { font-size: 17px; }
+    .svc-hero { padding: 8px 0 48px; }
+    .svc-hero-grid { padding-top: 16px; }
+    .m-price { display: flex; align-items: baseline; gap: 12px; font-size: 26px; font-weight: 800; color: var(--primary); margin: 0 0 14px; }
+    .m-price a { font-size: 15px; font-weight: 700; }
+    .lead-text { font-size: 16px; }
+    .facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 18px; }
+    .facts li { flex-direction: column; align-items: flex-start; gap: 4px; padding: 10px 12px; font-size: 14px; }
     .buy-card { padding: 20px; }
+    .buy-price { font-size: 30px; }
     .price-row { padding: 14px 16px; font-size: 15px; }
     .check-block { padding: 18px; }
     .faq summary { font-size: 16px; }
