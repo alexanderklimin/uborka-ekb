@@ -9,8 +9,9 @@ const walk = (dir) => {
     if (fs.statSync(p).isDirectory()) walk(p);
     else if (p.endsWith('.html')) {
       const html = fs.readFileSync(p, 'utf8');
+      const rel = path.relative(dist, p);
       const labels = [...html.matchAll(/data-todo="([^"]*)"/g)].map((m) => m[1]);
-      if (html.includes('preview-bar')) labels.push('режим превью');
+      if (/<meta name="robots" content="noindex/.test(html) && !rel.includes('404')) labels.push('режим превью (noindex)');
       if (labels.length) found.set(path.relative(dist, p), [...new Set(labels)]);
     }
   }

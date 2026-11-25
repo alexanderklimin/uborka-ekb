@@ -128,8 +128,8 @@ const related = s.related.map(serviceBySlug).filter(Boolean);
 </Base>
 
 <style>
-  .svc-hero { padding: 24px 0 48px; background: radial-gradient(800px 360px at 90% 0%, var(--glow-1) 0%, transparent 60%), var(--hero-bg); border-bottom: 1px solid var(--line); }
-  .svc-hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 48px; align-items: center; padding-top: 16px; }
+  .svc-hero { padding: 32px 0 80px; background: radial-gradient(800px 360px at 90% 0%, var(--glow-1) 0%, transparent 60%), var(--hero-bg); border-bottom: 1px solid var(--line); }
+  .svc-hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 80px; align-items: center; padding-top: 32px; }
   .lead-text { font-size: 19px; color: var(--muted); max-width: 640px; }
   .facts { display: flex; flex-wrap: wrap; gap: 12px; list-style: none; padding: 0; margin: 24px 0 0; }
   .facts li { display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 10px 16px; font-weight: 700; }
@@ -143,7 +143,7 @@ const related = s.related.map(serviceBySlug).filter(Boolean);
   .buy-price small { font-size: 16px; font-weight: 600; color: var(--muted); margin-left: 4px; }
   .buy-note { font-size: 13px; color: var(--muted); text-align: center; }
 
-  .block { margin-top: 56px; }
+  .block { margin-top: 96px; }
   .block h2 { margin-top: 0; }
   .price-rows { max-width: 720px; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
   .price-row { display: flex; justify-content: space-between; gap: 16px; padding: 16px 20px; border-bottom: 1px solid var(--line); }
@@ -152,8 +152,8 @@ const related = s.related.map(serviceBySlug).filter(Boolean);
   .price-row b { white-space: nowrap; }
   .muted { color: var(--muted); font-size: 15px; }
 
-  .checklist { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
-  .check-block { border: 1px solid var(--line); border-radius: var(--r); padding: 24px; }
+  .checklist { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+  .check-block { border: 1px solid var(--line); border-radius: var(--r); padding: 32px; }
   .check-block ul { list-style: none; padding: 0; margin: 0; }
   .check-block li { display: flex; gap: 10px; margin: 10px 0; line-height: 1.45; }
   .check-block li .icon { color: var(--primary); margin-top: 2px; }
@@ -181,7 +181,7 @@ const related = s.related.map(serviceBySlug).filter(Boolean);
     .svc-hero-grid { grid-template-columns: minmax(0, 1fr); gap: 28px; }
   }
   @media (max-width: 560px) {
-    .block { margin-top: 40px; }
+    .block { margin-top: 64px; }
     .lead-text { font-size: 17px; }
     .buy-card { padding: 20px; }
     .price-row { padding: 14px 16px; font-size: 15px; }

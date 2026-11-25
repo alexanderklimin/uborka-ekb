@@ -61,7 +61,6 @@ const messengers = [
     <Metrika />
   </head>
   <body>
-    {preview && <div class="preview-bar">Превью. Цены — временные, по конкурентам; телефон, реквизиты и тексты — образцы.</div>}
     <a class="skip" href="#main">К содержанию</a>
     <header class="header">
       <div class="wrap header-bar">
@@ -168,15 +167,15 @@ const messengers = [
   a { color: var(--primary); }
   h1, h2, h3 { line-height: 1.15; margin: 0 0 .5em; letter-spacing: -.02em; font-weight: 800; }
   h1 { font-size: clamp(32px, 5.2vw, 56px); }
-  h2 { font-size: clamp(26px, 3.6vw, 38px); margin-top: 1.4em; }
+  h2 { font-size: clamp(28px, 3.8vw, 42px); margin-top: 1.4em; margin-bottom: .6em; }
   h3 { font-size: 20px; letter-spacing: -.01em; }
   .icon { flex: none; vertical-align: middle; }
-  .wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 20px; }
-  .section { padding: 72px 0; }
+  .wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 32px; }
+  .section { padding: 112px 0; }
   .section-soft { background: var(--soft); }
   .section h2:first-child, .section-head h2 { margin-top: 0; }
-  .section-head { max-width: 680px; margin-bottom: 32px; }
-  .section-head p { color: var(--muted); font-size: 18px; margin: 0; }
+  .section-head { max-width: 680px; margin-bottom: 48px; }
+  .section-head p { color: var(--muted); font-size: 19px; margin: 0; line-height: 1.6; }
   .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--primary); background: var(--mint); padding: 6px 12px; border-radius: 999px; margin-bottom: 16px; }
   .skip { position: absolute; left: -9999px; } .skip:focus { left: 16px; top: 8px; z-index: 50; background: #fff; padding: 8px; }
 
@@ -184,7 +183,6 @@ const messengers = [
   .todo { display: inline-flex; align-items: center; gap: 2px; border: 1.5px dashed #d9a400; color: #8a6a00; background: #fffbea; border-radius: 6px; padding: 0 .4em; font-size: .85em; font-weight: 600; white-space: nowrap; line-height: 1.5; }
   div.todo { display: block; padding: 14px 16px; white-space: normal; margin: 12px 0; border-radius: var(--r-sm); font-weight: 500; }
   [data-todo]:not(.todo) { outline: 1.5px dashed #d9a400; outline-offset: 3px; border-radius: 4px; }
-  .preview-bar { background: var(--ink); color: #d5d8ea; font-size: 13px; text-align: center; padding: 6px 16px; }
 
   .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 999px; background: var(--primary); color: #fff; padding: 14px 26px; font: 700 16px var(--font); text-decoration: none; cursor: pointer; transition: transform .15s, background .15s, box-shadow .15s; }
   .btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
@@ -195,13 +193,13 @@ const messengers = [
   .chip { display: inline-flex; padding: 6px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,.2); text-decoration: none; }
 
   .header { background: rgba(255,255,255,.92); backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 20; }
-  .header-bar { display: flex; align-items: center; gap: 28px; min-height: 76px; }
+  .header-bar { display: flex; align-items: center; gap: 36px; min-height: 92px; }
   .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
   .brand-mark { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, var(--primary-2), var(--primary)); color: #fff; box-shadow: 0 6px 14px var(--mint); }
   .brand-text { display: flex; flex-direction: column; line-height: 1.15; }
   .brand-name { font-weight: 800; font-size: 22px; letter-spacing: -.02em; }
   .brand-tag { font-size: 12px; color: var(--muted); }
-  .nav { display: flex; gap: 24px; align-items: center; margin-left: auto; }
+  .nav { display: flex; gap: 32px; align-items: center; margin-left: auto; }
   .nav > a, .nav summary { color: var(--ink); text-decoration: none; font-weight: 600; font-size: 15px; cursor: pointer; }
   .nav > a:hover, .nav summary:hover { color: var(--primary); }
   .nav summary { list-style: none; display: inline-flex; align-items: center; gap: 4px; }
@@ -214,13 +212,13 @@ const messengers = [
   .header-contact { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.25; }
   .phone { font-weight: 800; font-size: 18px; color: var(--ink); text-decoration: none; white-space: nowrap; }
   .hours { font-size: 12px; color: var(--muted); }
-  .crumbs { font-size: 14px; color: var(--muted); padding-top: 20px; }
+  .crumbs { font-size: 14px; color: var(--muted); padding-top: 28px; }
   .crumbs a { color: var(--muted); text-decoration: none; } .crumbs a:hover { color: var(--primary); }
 
-  .footer { background: var(--footer); color: #b5b9cf; padding: 64px 0 28px; font-size: 15px; }
+  .footer { background: var(--footer); color: #b5b9cf; padding: 96px 0 36px; font-size: 15px; }
   .footer a { color: #eceefa; text-decoration: none; } .footer a:hover { color: #fff; text-decoration: underline; }
   .footer ul { list-style: none; padding: 0; margin: 0; } .footer li { margin: 8px 0; }
-  .footer-grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1.3fr; gap: 32px; }
+  .footer-grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1.3fr; gap: 48px; }
   .brand-footer { color: #fff; margin-bottom: 12px; }
   .brand-footer .brand-name { color: #fff; }
   .footer-tag { margin: 0 0 16px; }
@@ -235,7 +233,7 @@ const messengers = [
   .cookie p { margin: 0 0 12px; } .cookie-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
   @media (max-width: 1000px) {
-    .header-bar { flex-wrap: wrap; gap: 10px 20px; padding-top: 10px; padding-bottom: 6px; min-height: 0; }
+    .header-bar { flex-wrap: wrap; gap: 14px 20px; padding-top: 18px; padding-bottom: 12px; min-height: 0; }
     .nav { order: 3; width: 100%; margin-left: 0; overflow-x: auto; gap: 20px; padding-bottom: 4px; }
     .nav-services ul { top: calc(100% + 10px); }
     .header-cta { display: none; }
@@ -244,14 +242,14 @@ const messengers = [
   }
   @media (max-width: 560px) {
     body { font-size: 16px; }
-    .wrap { padding: 0 16px; }
-    .section { padding: 48px 0; }
+    .wrap { padding: 0 20px; }
+    .section { padding: 72px 0; }
     .brand-tag { display: none; }
     .brand-mark { width: 36px; height: 36px; }
     .brand-name { font-size: 20px; }
     .phone { font-size: 15px; }
     .footer-grid { grid-template-columns: 1fr; }
     .sticky-call { display: flex; align-items: center; justify-content: center; gap: 8px; position: fixed; left: 16px; right: 16px; bottom: 12px; z-index: 30; background: var(--cta); color: var(--cta-ink); font-weight: 800; padding: 15px; border-radius: 999px; text-decoration: none; box-shadow: 0 10px 24px var(--cta-shadow); }
-    .footer { padding-bottom: 96px; }
+    .footer { padding-top: 64px; padding-bottom: 104px; }
   }
 </style>
