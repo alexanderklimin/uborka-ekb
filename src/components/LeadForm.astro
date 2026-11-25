@@ -93,23 +93,23 @@ const captchaKey = SITE_MODE === 'production' ? INTEGRATIONS.smartCaptchaKey : n
 </script>
 
 <style>
-  .lead { position: relative; overflow: hidden; background: linear-gradient(135deg, #0f766e, #0a4f4a); color: #fff; border-radius: 28px; padding: 48px; margin: 72px 0 0; scroll-margin-top: 100px; }
+  .lead { position: relative; overflow: hidden; background: linear-gradient(135deg, var(--deep-1), var(--deep-2)); color: #fff; border-radius: 28px; padding: 48px; margin: 72px 0 0; scroll-margin-top: 100px; }
   .lead::after { content: ''; position: absolute; right: -120px; top: -120px; width: 360px; height: 360px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.14), transparent 70%); pointer-events: none; }
   .lead h2 { margin-top: 0; color: #fff; max-width: 720px; }
   .lead-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-  .lead label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 600; color: #cde7e3; }
+  .lead label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 600; color: rgba(255,255,255,.78); }
   .lead input, .lead select, .lead textarea { width: 100%; min-width: 0; font: 500 16px var(--font); padding: 0 14px; height: 52px; border: 0; border-radius: 12px; background: #fff; color: var(--ink); }
   .lead textarea { height: auto; padding: 12px 14px; resize: vertical; }
   .lead input:focus, .lead select:focus, .lead textarea:focus { outline: 3px solid rgba(255,255,255,.4); }
   .lead-wide { grid-column: 1 / -1; }
-  .lead .consent { flex-direction: row; align-items: flex-start; gap: 10px; margin: 18px 0 22px; color: #e3f1ef; font-weight: 500; }
+  .lead .consent { flex-direction: row; align-items: flex-start; gap: 10px; margin: 18px 0 22px; color: rgba(255,255,255,.9); font-weight: 500; }
   .lead .consent input { margin-top: 3px; width: 20px; height: 20px; flex: none; accent-color: var(--cta); }
   .lead .consent a { color: #fff; }
-  .lead .btn { background: var(--cta); box-shadow: 0 10px 24px rgba(0,0,0,.2); }
+  .lead .btn { background: var(--cta); color: var(--cta-ink); box-shadow: 0 10px 24px rgba(0,0,0,.2); }
   .lead .btn:hover { background: var(--cta-dark); }
   .hp { position: absolute; left: -9999px; }
   .lead-status { min-height: 1.5em; margin: 14px 0 0; font-weight: 700; color: #ffd2c2; }
-  .lead-status[data-ok='true'] { color: #b9f3e6; }
+  .lead-status[data-ok='true'] { color: #d9ffef; }
   @media (max-width: 800px) { .lead-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
   @media (max-width: 560px) { .lead { padding: 24px 18px; border-radius: 20px; margin-top: 48px; } .lead-grid { grid-template-columns: minmax(0, 1fr); } .lead .btn { width: 100%; } }
 </style>

@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import Todo from '../components/Todo.astro';
 import Icon from '../components/Icon.astro';
 import Calculator from '../components/Calculator.astro';
+import HeroCalc from '../components/HeroCalc.astro';
 import { SERVICES, serviceBySlug, priceFrom } from '../data/services.js';
 import { BRAND_NAME, CONTACTS, LEGAL, AREA } from '../data/site.js';
 import { ADVANTAGES, PROCESS, HERO_POINTS } from '../data/content.js';
@@ -22,34 +23,13 @@ const flat = [serviceBySlug('podderzhivayushchaya-uborka'), serviceBySlug('gener
         <span class="eyebrow"><Icon name="map-pin" size={16} /> Екатеринбург и пригороды</span>
         <h1>Уборка квартир и офисов <span class="accent">без сюрпризов в цене</span></h1>
         <p class="hero-sub">Называем стоимость до выезда, приезжаем со своими средствами и инвентарём. Вы проверяете результат — и только потом платите.</p>
-        <div class="hero-cta">
-          <a class="btn btn-cta" href="#zayavka">Оставить заявку</a>
-          <a class="btn btn-ghost" href="#kalkulyator"><Icon name="calculator" size={18} /> Рассчитать стоимость</a>
-        </div>
         <ul class="hero-points">
           {HERO_POINTS ? HERO_POINTS.map((t) => <li><Icon name="check" size={18} /> {t}</li>) : <li><Todo label="условия: предоплата, договор" /></li>}
           <li><Icon name="check" size={18} /> {CONTACTS.hours ?? <Todo label="часы работы" />}</li>
         </ul>
       </div>
 
-      <div class="price-card">
-        <div class="price-card-head">
-          <span>Цена за квартиру</span>
-          <span class="price-card-badge">фиксированная</span>
-        </div>
-        <table>
-          <thead><tr><th></th><th>1-комн.</th><th>2-комн.</th><th>3-комн.</th></tr></thead>
-          <tbody>
-            {flat.map((s) => (
-              <tr>
-                <th scope="row"><a href={`/${s.slug}/`}>{s.short.replace(' уборка', '')}</a></th>
-                {[1, 2, 3].map((n) => <td>{s.price.rooms[n] != null ? rub(s.price.rooms[n]) : <Todo label="цена" />}</td>)}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <a class="price-card-link" href="/ceny/">Все цены <Icon name="arrow-right" size={16} /></a>
-      </div>
+      <HeroCalc />
     </div>
   </section>
 
@@ -135,26 +115,16 @@ const flat = [serviceBySlug('podderzhivayushchaya-uborka'), serviceBySlug('gener
 
 <style>
   .hero { position: relative; overflow: hidden; padding: 64px 0 56px; background:
-    radial-gradient(900px 420px at 85% 10%, #d6f1eb 0%, transparent 60%),
-    radial-gradient(700px 380px at 0% 100%, #fff1e9 0%, transparent 60%), #fbfdfc; }
+    radial-gradient(900px 420px at 85% 10%, var(--glow-1) 0%, transparent 60%),
+    radial-gradient(700px 380px at 0% 100%, var(--glow-2) 0%, transparent 60%), var(--hero-bg); }
   .hero-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 56px; align-items: center; }
   .accent { color: var(--primary); }
-  .hero-sub { font-size: 20px; color: var(--muted); max-width: 560px; margin: 0 0 28px; }
+  .hero-sub { font-size: 20px; color: var(--muted); max-width: 560px; margin: 0; }
   .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
   .hero-points { display: flex; flex-wrap: wrap; gap: 8px 20px; list-style: none; padding: 0; margin: 28px 0 0; font-weight: 600; font-size: 15px; }
   .hero-points li { display: inline-flex; align-items: center; gap: 6px; }
   .hero-points .icon { color: var(--primary); }
 
-  .price-card { background: #fff; border-radius: 24px; padding: 28px; box-shadow: var(--shadow-lg); border: 1px solid var(--line); }
-  .price-card-head { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 20px; margin-bottom: 12px; }
-  .price-card-badge { font-size: 12px; font-weight: 700; color: var(--primary); background: var(--mint); padding: 4px 10px; border-radius: 999px; }
-  .price-card table { width: 100%; border-collapse: collapse; }
-  .price-card th, .price-card td { padding: 14px 4px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
-  .price-card thead th { font-size: 13px; color: var(--muted); font-weight: 600; }
-  .price-card th[scope='row'] { text-align: left; font-weight: 700; }
-  .price-card th[scope='row'] a { color: var(--ink); text-decoration: none; }
-  .price-card td { font-weight: 800; font-size: 17px; }
-  .price-card-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; font-weight: 700; text-decoration: none; }
 
   .adv { margin-top: -28px; position: relative; }
   .adv-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; list-style: none; padding: 0; margin: 0; }
@@ -171,7 +141,7 @@ const flat = [serviceBySlug('podderzhivayushchaya-uborka'), serviceBySlug('gener
   .card-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
   .card-price { font-weight: 800; color: var(--primary); }
   .card-arrow { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--soft); color: var(--ink); transition: background .18s, color .18s; }
-  .card:hover .card-arrow { background: var(--cta); color: #fff; }
+  .card:hover .card-arrow { background: var(--cta); color: var(--cta-ink); }
 
   .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; list-style: none; padding: 0; margin: 0; counter-reset: none; }
   .steps li { display: flex; flex-direction: column; gap: 8px; position: relative; padding-top: 8px; }
@@ -199,11 +169,7 @@ const flat = [serviceBySlug('podderzhivayushchaya-uborka'), serviceBySlug('gener
     .hero { padding: 36px 0 32px; }
     .hero-sub { font-size: 17px; }
     .hero-cta .btn { flex: 1 1 100%; }
-    .price-card { padding: 18px; border-radius: 18px; }
-    .price-card th, .price-card td { padding: 12px 2px; font-size: 13px; }
-    .price-card td { font-size: 14px; }
-    .price-card-head { font-size: 17px; }
-    .adv-grid, .cards, .steps { grid-template-columns: 1fr; }
+            .adv-grid, .cards, .steps { grid-template-columns: 1fr; }
     .adv-grid li { flex-direction: row; flex-wrap: wrap; align-items: center; column-gap: 12px; padding: 16px; }
     .adv-grid li .adv-icon { margin: 0; }
     .adv-grid li span:last-child { flex-basis: 100%; }

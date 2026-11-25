@@ -52,5 +52,8 @@ export const INTEGRATIONS = {
   smartCaptchaKey: process.env.PUBLIC_SMARTCAPTCHA_KEY || null,
 };
 
+// Палитра сайта: 'a' ультрамарин + лимон, 'b' мята + коралл, 'c' лаванда + янтарь. Выбирает заказчик.
+export const THEME = 'a';
+
 export const SITE_URL = process.env.SITE_URL || 'https://pribrali.ru';
 export const UPDATED = '2026-11-25';

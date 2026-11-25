@@ -1,0 +1,118 @@
+---
+// Быстрый расчёт на первом экране (паттерн лидеров: Qlean, CleanON): вид уборки, −/+ комнат, цена сразу.
+import Icon from './Icon.astro';
+import Todo from './Todo.astro';
+import { serviceBySlug } from '../data/services.js';
+import { CONTACTS } from '../data/site.js';
+import { PAYMENT_NOTE } from '../data/content.js';
+import { rub } from '../lib/format.js';
+
+const types = ['podderzhivayushchaya-uborka', 'generalnaya-uborka'].map(serviceBySlug).map((s) => ({
+  slug: s.slug,
+  label: s.short.replace(' уборка', ''),
+  rooms: s.price.rooms,
+  perM2: s.price.perM2,
+}));
+const first = types[0];
+const start = first.rooms[2];
+const messengers = [
+  { href: CONTACTS.telegram, label: 'Telegram', icon: 'send' },
+  { href: CONTACTS.whatsapp, label: 'WhatsApp', icon: 'message-circle' },
+  { href: CONTACTS.max, label: 'MAX', icon: 'message-square' },
+];
+---
+<div class="hc" data-hc={JSON.stringify(types)}>
+  <div class="hc-tabs" role="tablist">
+    {types.map((t, i) => (
+      <button type="button" role="tab" class="hc-tab" aria-selected={i === 0 ? 'true' : 'false'} data-slug={t.slug}>{t.label}</button>
+    ))}
+  </div>
+
+  <div class="hc-row">
+    <div class="hc-stepper">
+      <button type="button" class="hc-step" data-d="-1" aria-label="Меньше комнат">−</button>
+      <output class="hc-rooms">2-комнатная</output>
+      <button type="button" class="hc-step" data-d="1" aria-label="Больше комнат">+</button>
+    </div>
+    <div class="hc-price">
+      <small>стоимость</small>
+      <strong>{start != null ? rub(start) : <Todo label="цена" />}</strong>
+    </div>
+  </div>
+
+  <a class="btn btn-cta hc-go" href="#zayavka">Заказать уборку</a>
+  <p class="hc-note">{PAYMENT_NOTE ?? <Todo label="условия оплаты" />}</p>
+
+  <div class="hc-msg">
+    {messengers.map((m) => m.href
+      ? <a href={m.href} data-goal="messenger_click" rel="noopener"><Icon name={m.icon} size={18} /> {m.label}</a>
+      : <Todo label={m.label} />)}
+  </div>
+</div>
+
+<script>
+  import { rub } from '../lib/format.js';
+  for (const root of document.querySelectorAll<HTMLElement>('[data-hc]')) {
+    const types = JSON.parse(root.dataset.hc!);
+    let type = types[0];
+    let rooms = 2;
+    const $ = (s: string) => root.querySelector(s) as HTMLElement;
+    const roomLabel = (n: number) => (n >= 4 ? '4 и больше комнат' : `${n}-комнатная`);
+    const render = () => {
+      $('.hc-rooms').textContent = roomLabel(rooms);
+      const price = rooms <= 3 ? type.rooms[rooms] : null;
+      const strong = $('.hc-price strong');
+      const small = $('.hc-price small');
+      if (price != null) { small.textContent = 'стоимость'; strong.textContent = rub(price); }
+      else if (type.perM2 != null) { small.textContent = 'по площади'; strong.textContent = `${rub(type.perM2)}/м²`; }
+      $('.hc-go').textContent = price != null ? `Заказать за ${rub(price)}` : 'Рассчитать по площади';
+      root.querySelectorAll<HTMLButtonElement>('.hc-step').forEach((b) => {
+        b.disabled = (b.dataset.d === '-1' && rooms <= 1) || (b.dataset.d === '1' && rooms >= 4);
+      });
+    };
+    let used = false;
+    const touch = () => { if (!used) { used = true; (window as any).goal?.('calc_used'); } };
+    root.querySelectorAll<HTMLButtonElement>('.hc-tab').forEach((tab) => tab.addEventListener('click', () => {
+      type = types.find((t: any) => t.slug === tab.dataset.slug);
+      root.querySelectorAll('.hc-tab').forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
+      render(); touch();
+    }));
+    root.querySelectorAll<HTMLButtonElement>('.hc-step').forEach((b) => b.addEventListener('click', () => {
+      rooms = Math.min(4, Math.max(1, rooms + Number(b.dataset.d)));
+      render(); touch();
+    }));
+    $('.hc-go').addEventListener('click', () => {
+      const price = rooms <= 3 ? type.rooms[rooms] : null;
+      const summary = `${type.label}, ${roomLabel(rooms)}${price != null ? `, ${price} ₽` : ''}`;
+      document.dispatchEvent(new CustomEvent('calc:apply', { detail: { service: type.slug, area: '', summary } }));
+    });
+    render();
+  }
+</script>
+
+<style>
+  .hc { background: #fff; border-radius: 28px; padding: 28px; box-shadow: var(--shadow-lg); border: 1px solid var(--line); }
+  .hc-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: var(--soft); padding: 6px; border-radius: 999px; margin-bottom: 20px; }
+  .hc-tab { border: 0; background: transparent; font: 700 15px var(--font); color: var(--muted); padding: 12px 8px; border-radius: 999px; cursor: pointer; transition: background .15s, color .15s; }
+  .hc-tab[aria-selected='true'] { background: var(--primary); color: #fff; box-shadow: 0 6px 14px var(--mint); }
+  .hc-row { display: flex; flex-direction: column; align-items: stretch; gap: 16px; margin-bottom: 20px; }
+  .hc-stepper { display: flex; align-items: center; justify-content: space-between; gap: 4px; border: 2px solid var(--primary); border-radius: 999px; padding: 4px; }
+  .hc-step { width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--soft); color: var(--primary); font: 700 24px/1 var(--font); cursor: pointer; }
+  .hc-step:disabled { opacity: .35; cursor: default; }
+  .hc-rooms { min-width: 170px; text-align: center; font-weight: 700; }
+  .hc-price { display: flex; flex-direction: column; align-items: center; line-height: 1.1; }
+  .hc-price small { color: var(--muted); font-size: 13px; font-weight: 600; }
+  .hc-price strong { font-size: 40px; font-weight: 800; letter-spacing: -.03em; }
+  .hc-go { width: 100%; font-size: 18px; padding: 18px; }
+  .hc-note { text-align: center; font-size: 13px; color: var(--muted); margin: 10px 0 16px; }
+  .hc-msg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; border-top: 1px solid var(--line); padding-top: 16px; }
+  .hc-msg a { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 6px; border-radius: 12px; background: var(--soft); color: var(--ink); text-decoration: none; font-weight: 700; font-size: 14px; }
+  .hc-msg a:hover { background: var(--mint); }
+  .hc-msg a .icon { color: var(--primary); }
+  @media (max-width: 560px) {
+    .hc { padding: 18px; border-radius: 22px; }
+    .hc-rooms { min-width: 0; }
+    .hc-price strong { font-size: 36px; }
+    .hc-msg a { font-size: 13px; }
+  }
+</style>
