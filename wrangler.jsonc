@@ -3,7 +3,7 @@
   // Workers Builds: команда сборки `npm run build` (превью: noindex + Disallow + X-Robots-Tag), деплой `npx wrangler deploy`.
   // Боевой сайт — Yandex Cloud (`npm run build:production`), не здесь. Свой домен сюда не привязывать.
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "uborka-ekb-preview",
+  "name": "uborka-ekb",
   "compatibility_date": "2026-11-01",
   "assets": {
     "directory": "./dist",
