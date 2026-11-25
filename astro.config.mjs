@@ -3,7 +3,7 @@ import sitemap from '@astrojs/sitemap';
 
 // SITE_MODE=production — боевая сборка для Yandex Cloud; всё остальное — превью (noindex, Disallow).
 const production = process.env.SITE_MODE === 'production';
-const SITE_URL = process.env.SITE_URL || 'https://example.ru';
+const SITE_URL = process.env.SITE_URL || 'https://pribrali.ru';
 const UPDATED = '2026-11-25';
 
 export default defineConfig({

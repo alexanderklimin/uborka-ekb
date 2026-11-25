@@ -10,8 +10,8 @@ export const PREVIEW = SITE_MODE !== 'production';
 export const demo = (real, temporary) => real ?? (PREVIEW ? temporary : null);
 
 export const BRAND = {
-  // Не выбрано: «Лоск» (losk96.ru) / «Прибрали» (pribrali.ru). В превью — «Лоск».
-  name: demo(null, 'Лоск'),
+  // Решение заказчика 2026-11-25: «Прибрали», домен pribrali.ru (ещё не куплен).
+  name: 'Прибрали',
   tagline: 'уборка квартир и офисов в Екатеринбурге',
 };
 export const BRAND_NAME = BRAND.name ?? 'Название';
@@ -19,7 +19,7 @@ export const BRAND_NAME = BRAND.name ?? 'Название';
 export const CONTACTS = {
   phone: demo(null, '+7 (343) 000-00-00'),
   phoneE164: demo(null, '+73430000000'),
-  email: demo(null, 'info@example.ru'),        // почта для клиентов
+  email: demo(null, 'info@pribrali.ru'),        // почта для клиентов
   telegram: demo(null, 'https://t.me/'),
   whatsapp: demo(null, 'https://wa.me/'),
   max: demo(null, 'https://max.ru/'),
@@ -52,5 +52,5 @@ export const INTEGRATIONS = {
   smartCaptchaKey: process.env.PUBLIC_SMARTCAPTCHA_KEY || null,
 };
 
-export const SITE_URL = process.env.SITE_URL || 'https://example.ru';
+export const SITE_URL = process.env.SITE_URL || 'https://pribrali.ru';
 export const UPDATED = '2026-11-25';
