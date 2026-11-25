@@ -1,0 +1,19 @@
+{
+  // ПРЕВЬЮ на Cloudflare Workers (static assets), сборка из GitHub через Workers Builds.
+  // Работает из корня репозитория при пустых настройках в панели: Root directory — пусто,
+  // Build command — пусто, Deploy command — npx wrangler deploy. Сборку запускает сам wrangler (build.command).
+  // Сборка превью: noindex + Disallow + X-Robots-Tag. Боевой сайт — Yandex Cloud, не здесь. Свой домен сюда не привязывать.
+  "$schema": "site/node_modules/wrangler/config-schema.json",
+  "name": "uborka-ekb-preview",
+  "compatibility_date": "2026-11-01",
+  "build": {
+    "command": "cd site && npm ci --no-audit --no-fund && npm run build:preview"
+  },
+  "assets": {
+    "directory": "./site/dist",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  "workers_dev": true,
+  "preview_urls": false
+}
