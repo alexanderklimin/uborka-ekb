@@ -7,7 +7,7 @@ import Icon from '../components/Icon.astro';
 import Metrika from '../components/Metrika.astro';
 import CookieBanner from '../components/CookieBanner.astro';
 import LeadForm from '../components/LeadForm.astro';
-import { BRAND, BRAND_NAME, CONTACTS, LEGAL, SITE_MODE, THEME } from '../data/site.js';
+import { BRAND, BRAND_NAME, CONTACTS, LEGAL, SITE_MODE } from '../data/site.js';
 import { SERVICES } from '../data/services.js';
 import { breadcrumbs } from '../lib/seo.js';
 import { telHref } from '../lib/format.js';
@@ -38,24 +38,15 @@ const messengers = [
 ];
 ---
 <!doctype html>
-<html lang="ru" data-theme={THEME}>
+<html lang="ru">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    <meta name="theme-color" content="#2b3ae8" />
     <link rel="preload" href={fontCyr} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={fontLat} as="font" type="font/woff2" crossorigin />
-    {preview && <script is:inline>
-      // Только превью: сравнение палитр по ссылке ?theme=a|b|c (запоминается в браузере).
-      (function () {
-        try {
-          var t = new URLSearchParams(location.search).get('theme');
-          if (t) localStorage.setItem('theme', t); else t = localStorage.getItem('theme');
-          if (t) document.documentElement.dataset.theme = t;
-        } catch (e) {}
-      })();
-    </script>}
     {(preview || noindex) ? <meta name="robots" content="noindex, nofollow" /> : <link rel="canonical" href={canonical} />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta property="og:type" content="website" />
@@ -161,26 +152,12 @@ const messengers = [
     --shadow-lg: 0 2px 4px rgba(20,23,43,.04), 0 24px 48px rgba(20,23,43,.10);
     --font: 'Manrope Variable', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
   }
-  /* A — ультрамарин + лимон */
-  :root, [data-theme='a'] {
+  /* Палитра «ультрамарин + лимон» (выбор заказчика 2026-11-25) */
+  :root {
     --primary: #2b3ae8; --primary-dark: #1f2cc4; --primary-2: #5b68ff;
     --soft: #f4f5ff; --mint: #e7e9ff; --glow-1: #dfe3ff; --glow-2: #fff6cc; --hero-bg: #fbfbff;
     --cta: #ffd23f; --cta-dark: #ffc400; --cta-ink: #14172b; --cta-shadow: rgba(255,196,0,.35);
     --deep-1: #2b3ae8; --deep-2: #1a1f8f; --footer: #12143a;
-  }
-  /* B — сочная мята + коралл */
-  [data-theme='b'] {
-    --primary: #00a37a; --primary-dark: #008563; --primary-2: #2fd3a6;
-    --soft: #effaf6; --mint: #d8f5ea; --glow-1: #d3f4e8; --glow-2: #ffeadf; --hero-bg: #fbfefd;
-    --cta: #ff6a3d; --cta-dark: #ec5527; --cta-ink: #ffffff; --cta-shadow: rgba(255,106,61,.32);
-    --deep-1: #00a37a; --deep-2: #00573f; --footer: #0c2a22;
-  }
-  /* C — лаванда + янтарь */
-  [data-theme='c'] {
-    --primary: #6b4eff; --primary-dark: #5536e6; --primary-2: #9b85ff;
-    --soft: #f6f3ff; --mint: #ece6ff; --glow-1: #e6defe; --glow-2: #ffefd2; --hero-bg: #fcfbff;
-    --cta: #ffaa1f; --cta-dark: #f59700; --cta-ink: #14172b; --cta-shadow: rgba(245,151,0,.32);
-    --deep-1: #6b4eff; --deep-2: #33228f; --footer: #1a1438;
   }
   *, *::before, *::after { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; scrollbar-gutter: stable; }
