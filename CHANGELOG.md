@@ -12,6 +12,7 @@
 - Химчистка убрана из плана (research/build_plan.py → 95 страниц) и из site_structure.md.
 - Скелет сайта в site/ (Astro 7.4.12, Node 22): главная, 8 страниц услуг из src/data/services.js, цены, контакты, гарантии, о компании, политика ПДн и отдельное согласие (черновики, проверить юристу), 404, robots. Калькулятор (src/lib/calc.js), форма с отдельной галочкой согласия, honeypot, SmartCaptcha, UTM/yclid/ClientID. Метрика только в production и после согласия на cookie. Schema.org: HomeAndConstructionBusiness, Service/Offer, FAQPage (только отвеченные), BreadcrumbList.
 - Всё, что даёт заказчик (название, телефон, реквизиты, цены, сроки, отзывы, фото), — null в src/data/site.js и services.js, на страницах жёлтые заглушки ⚑. `npm run build:production` падает, пока они есть (сейчас 281). Чек-листы работ — черновик, согласовать.
-- functions/lead: Cloud Function (Node 22) заявка → письмо по SMTP; проверка телефона, согласия, origin, капчи; данные заявки в логи не пишутся. Не развёрнута.
+- yc-functions/lead: Cloud Function (Node 22) заявка → письмо по SMTP; проверка телефона, согласия, origin, капчи; данные заявки в логи не пишутся. Не развёрнута.
 - Проверки: 12 тестов сайта, 6 тестов функции; вёрстка без горизонтальной прокрутки на 360 px.
 - Git: приватный репозиторий alexanderklimin/uborka-ekb, deploy key /root/.ssh/uborka_ekb_deploy (хост github-uborka-ekb). Первый push в main. Превью: Cloudflare Workers Builds (root site, build:preview, wrangler deploy) — подключает пользователь.
+- functions/ → yc-functions/: Cloudflare (wrangler) принимал её за Pages Functions. Первая сборка в Cloudflare упала: не был задан Root directory = site и Build command.

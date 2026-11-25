@@ -4,5 +4,5 @@
 node_modules/
 site/dist/
 site/.astro/
-functions/**/node_modules/
+yc-functions/**/node_modules/
 *.zip
