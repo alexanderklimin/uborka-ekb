@@ -16,13 +16,13 @@ const rows = [
 ---
 <Base title="Контакты и реквизиты" description="Телефон, мессенджеры, часы работы и реквизиты. Уборка квартир и офисов в Екатеринбурге."
   crumbs={[{ name: 'Главная', path: '/' }, { name: 'Контакты', path: '/kontakty/' }]}>
-  <div class="wrap">
+  <div class="wrap page">
     <h1>Контакты</h1>
     <dl class="contacts">
       {rows.map(([k, v, todo]) => <><dt>{k}</dt><dd>{v ? <Fragment set:html={v} /> : <Todo label={todo} />}</dd></>)}
     </dl>
     <p>Работаем по Екатеринбургу{AREA.suburbs ? ` и пригородам: ${AREA.suburbs.join(', ')}` : ''}.</p>
-    <Todo inline={false} label="Карта: Яндекс Карты (виджет организации) после создания карточки в Яндекс Бизнесе" />
+    <Todo quiet label="Карта: виджет Яндекс Карт после создания карточки" />
 
     <h2>Реквизиты</h2>
     <dl class="contacts">
@@ -36,7 +36,11 @@ const rows = [
   </div>
 </Base>
 <style>
-  .contacts { display: grid; grid-template-columns: max-content 1fr; gap: 8px 24px; }
-  .contacts dt { color: var(--c-muted); } .contacts dd { margin: 0; font-weight: 600; }
-  @media (max-width: 560px) { .contacts { grid-template-columns: 1fr; gap: 2px; } .contacts dd { margin-bottom: 10px; } }
+  .page { padding-top: 24px; }
+  .contacts { display: grid; grid-template-columns: max-content 1fr; gap: 0; max-width: 720px; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; margin: 16px 0 24px; }
+  .contacts dt, .contacts dd { padding: 14px 20px; border-bottom: 1px solid var(--line); margin: 0; }
+  .contacts dt { color: var(--muted); background: var(--soft); }
+  .contacts dd { font-weight: 700; }
+  .contacts dt:last-of-type, .contacts dd:last-of-type { border-bottom: 0; }
+  @media (max-width: 560px) { .contacts { grid-template-columns: 1fr; } .contacts dt { border-bottom: 0; padding-bottom: 2px; background: none; font-size: 14px; } .contacts dd { padding-top: 0; } }
 </style>

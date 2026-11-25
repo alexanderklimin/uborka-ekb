@@ -1,18 +1,28 @@
 ---
 import Base from '../layouts/Base.astro';
 import Todo from '../components/Todo.astro';
+import Icon from '../components/Icon.astro';
+import { GUARANTEES } from '../data/content.js';
 ---
 <Base title="Гарантии качества уборки" description="Что делаем, если результат уборки не понравился: переуборка, ответственность за имущество, договор."
   crumbs={[{ name: 'Главная', path: '/' }, { name: 'Гарантии', path: '/garantii/' }]}>
-  <div class="wrap">
+  <div class="wrap page">
     <h1>Гарантии</h1>
-    <h2>Если что-то не понравилось</h2>
-    <Todo inline={false} label="Условия переуборки: в какой срок сообщить (например, 24 часа), что бесплатно, как фиксируем (фото)" />
-    <h2>Если что-то повредили</h2>
-    <Todo inline={false} label="Ответственность за имущество: возмещаем? есть ли страхование? лимит?" />
-    <h2>Договор</h2>
-    <Todo inline={false} label="Работаем по договору для всех или только для юрлиц? Есть публичная оферта?" />
-    <h2>Кто приходит</h2>
-    <Todo inline={false} label="Свои сотрудники или исполнители по договору, как проверяем, инструктаж" />
+    <p class="page-lead">Отвечаем за результат и за ваши вещи. Вот что мы обещаем — и что делаем, если что-то пошло не так.</p>
+    {GUARANTEES
+      ? <div class="g-grid">{GUARANTEES.map(([icon, title, text]) => (
+          <div class="g-card"><span class="g-icon"><Icon name={icon} size={24} /></span><h2>{title}</h2><p>{text}</p></div>
+        ))}</div>
+      : <Todo inline={false} label="Условия гарантий: переуборка, ответственность, договор, кто приходит" />}
   </div>
 </Base>
+<style>
+  .page { padding-top: 24px; }
+  .page-lead { font-size: 19px; color: var(--muted); max-width: 680px; }
+  .g-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 32px; }
+  .g-card { border: 1px solid var(--line); border-radius: var(--r); padding: 28px; }
+  .g-card h2 { font-size: 22px; margin: 14px 0 8px; }
+  .g-card p { margin: 0; color: var(--muted); }
+  .g-icon { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 14px; background: var(--mint); color: var(--primary); }
+  @media (max-width: 700px) { .g-grid { grid-template-columns: 1fr; } .g-card { padding: 20px; } }
+</style>

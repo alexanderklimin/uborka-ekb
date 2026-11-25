@@ -1,8 +1,9 @@
 ---
 // Заглушка для данных, которые должен дать заказчик.
-// В превью видна жёлтым, сборка production с ней падает (scripts/check-placeholders.mjs).
-interface Props { label: string; inline?: boolean }
-const { label, inline = true } = Astro.props;
+// В превью видна пунктиром, `npm run build:production` с ней падает (scripts/check-placeholders.mjs).
+// quiet — невидимая метка: блок в превью оформлен нейтрально, но production всё равно её найдёт.
+interface Props { label: string; inline?: boolean; quiet?: boolean }
+const { label, inline = true, quiet = false } = Astro.props;
 const Tag = inline ? 'mark' : 'div';
 ---
-<Tag class="todo" data-todo={label} title="Нужно от заказчика">⚑ {label}</Tag>
+{quiet ? <span hidden data-todo={label}></span> : <Tag class="todo" data-todo={label} title="Нужно от заказчика">⚑ {label}</Tag>}

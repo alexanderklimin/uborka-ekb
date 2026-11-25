@@ -16,9 +16,11 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.5",
+    "@fontsource-variable/manrope": "5.2.8",
     "astro": "7.4.12"
   },
   "devDependencies": {
+    "lucide-static": "0.460.0",
     "wrangler": "4.164.0"
   }
 }

@@ -2,32 +2,38 @@
 import Base from '../layouts/Base.astro';
 import Todo from '../components/Todo.astro';
 import Calculator from '../components/Calculator.astro';
+import Icon from '../components/Icon.astro';
 import { SERVICES, priceFrom } from '../data/services.js';
 import { AREA } from '../data/site.js';
 import { rub } from '../lib/format.js';
 ---
 <Base title="Цены на уборку квартир и офисов в Екатеринбурге" description="Прайс на уборку квартир, генеральную уборку, уборку после ремонта, мытьё окон, офисы и коттеджи. Цены «от», что входит, минимальный заказ."
   crumbs={[{ name: 'Главная', path: '/' }, { name: 'Цены', path: '/ceny/' }]}>
-  <div class="wrap">
+  <div class="wrap page">
     <h1>Цены на уборку</h1>
     <p>Цены указаны «от». Точную стоимость называем до выезда, когда узнаем площадь и пожелания. Состав работ — на странице каждой услуги.</p>
     <table class="price-list">
       <thead><tr><th>Услуга</th><th>Цена</th></tr></thead>
       <tbody>
         {SERVICES.map((s) => { const f = priceFrom(s); return (
-          <tr><td><a href={`/${s.slug}/`}>{s.short}</a></td><td>{f ? `от ${rub(f.value)}${f.suffix}` : <Todo label="цена" />}</td></tr>
+          <tr><td><a href={`/${s.slug}/`}><Icon name={s.icon} size={20} /> {s.short}</a></td><td>{f ? `от ${rub(f.value)}${f.suffix}` : <Todo label="цена" />}</td></tr>
         ); })}
       </tbody>
     </table>
-    <h2>Дополнительные услуги</h2>
-    <Todo inline={false} label="Доп. услуги и цены: духовка, холодильник внутри, балкон, глажка и т. д. — только то, что делаем" />
+    <Todo quiet label="Доп. услуги и цены (духовка, холодильник внутри и т. п.)" />
     <p>Минимальный заказ: {AREA.minOrder != null ? rub(AREA.minOrder) : <Todo label="сумма" />}. Выезд за город: {AREA.suburbFee ?? <Todo label="условия" />}.</p>
     <Calculator />
   </div>
 </Base>
 <style>
-  .price-list { border-collapse: collapse; width: 100%; max-width: 640px; }
-  .price-list th, .price-list td { padding: 10px 0; border-bottom: 1px solid var(--c-line); text-align: left; }
-  .price-list td:last-child, .price-list th:last-child { text-align: right; }
-  .price-list td:last-child { font-weight: 700; }
+  .page { padding-top: 24px; }
+  .price-list { border-collapse: separate; border-spacing: 0; width: 100%; max-width: 760px; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; margin: 24px 0; }
+  .price-list th, .price-list td { padding: 16px 20px; border-bottom: 1px solid var(--line); text-align: left; }
+  .price-list thead th { background: var(--soft); font-size: 14px; color: var(--muted); }
+  .price-list tr:last-child td { border-bottom: 0; }
+  .price-list td:last-child, .price-list th:last-child { text-align: right; white-space: nowrap; }
+  .price-list td:last-child { font-weight: 800; }
+  .price-list a { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); font-weight: 600; text-decoration: none; }
+  .price-list a .icon { color: var(--primary); }
+  @media (max-width: 560px) { .price-list th, .price-list td { padding: 12px; font-size: 15px; } }
 </style>

@@ -67,13 +67,16 @@ const data = {
 </script>
 
 <style>
-  .calc { background: var(--c-soft); border-radius: var(--r); padding: 24px; margin: 32px 0; }
+  .calc { background: #fff; border-radius: 24px; padding: 36px; box-shadow: var(--shadow); border: 1px solid var(--line); scroll-margin-top: 100px; }
   .calc h2 { margin-top: 0; }
-  .calc-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
-  .calc label { display: flex; flex-direction: column; font-size: 14px; color: var(--c-muted); gap: 4px; }
-  .calc select, .calc input { width: 100%; min-width: 0; font: 16px var(--font); padding: 10px; border: 1px solid var(--c-line); border-radius: 8px; background: #fff; color: var(--c-text); }
-  .calc-total { font-size: 24px; font-weight: 800; margin: 0 0 4px; }
-  .calc-lines { margin: 0 0 16px; padding-left: 20px; color: var(--c-muted); font-size: 15px; }
-  .calc-note { font-size: 13px; color: var(--c-muted); margin: 12px 0 0; }
-  @media (max-width: 700px) { .calc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .calc { padding: 16px; } }
+  .calc-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .calc label { display: flex; flex-direction: column; font-size: 14px; color: var(--muted); font-weight: 600; gap: 6px; }
+  .calc select, .calc input { width: 100%; min-width: 0; font: 600 16px var(--font); height: 52px; padding: 0 14px; border: 1.5px solid var(--line); border-radius: 12px; background: #fff; color: var(--ink); transition: border-color .15s; }
+  .calc select:focus, .calc input:focus { outline: none; border-color: var(--primary); }
+  .calc-result { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px; background: var(--soft); border-radius: 16px; padding: 20px 24px; margin-bottom: 20px; }
+  .calc-total { font-size: 32px; font-weight: 800; letter-spacing: -.02em; margin: 0; color: var(--primary); }
+  .calc-lines { margin: 0; padding: 0; list-style: none; color: var(--muted); font-size: 14px; }
+  .calc-note { font-size: 13px; color: var(--muted); margin: 14px 0 0; }
+  @media (max-width: 800px) { .calc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 560px) { .calc { padding: 20px; border-radius: 18px; } .calc-total { font-size: 26px; } .calc .btn { width: 100%; } .calc-result { padding: 16px; } }
 </style>

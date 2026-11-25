@@ -1,54 +1,56 @@
-// Единый конфиг компании. Всё, что должен дать заказчик, стоит как null.
-// null на странице выводится жёлтой заглушкой (компонент Todo),
-// а `npm run build:production` падает, пока в dist остаётся хоть одна заглушка.
+// Единый конфиг компании.
+//
+// demo(настоящее, временное): пока настоящего значения нет (null), в ПРЕВЬЮ показывается временное
+// (цены — по конкурентам из research/competitors.md, контакты и реквизиты — нули/образцы).
+// В production временные значения не подставляются никогда: null → заглушка ⚑ → `npm run build:production` падает.
+// Как только заказчик дал данные — пишем их первым аргументом.
+
+export const SITE_MODE = process.env.SITE_MODE === 'production' ? 'production' : 'preview';
+export const PREVIEW = SITE_MODE !== 'production';
+export const demo = (real, temporary) => real ?? (PREVIEW ? temporary : null);
 
 export const BRAND = {
-  // Название ещё не выбрано: «Лоск» (losk96.ru) / «Прибрали» (pribrali.ru) / «Отмыли» (otmyli.ru).
-  // Меняется только здесь.
-  name: null,
+  // Не выбрано: «Лоск» (losk96.ru) / «Прибрали» (pribrali.ru). В превью — «Лоск».
+  name: demo(null, 'Лоск'),
   tagline: 'уборка квартир и офисов в Екатеринбурге',
 };
-
 export const BRAND_NAME = BRAND.name ?? 'Название';
 
 export const CONTACTS = {
-  phone: null,          // '+7 (343) 000-00-00' — как показываем
-  phoneE164: null,      // '+73430000000' — для tel:
-  email: null,          // почта для клиентов (может совпадать с почтой для заявок)
-  telegram: null,       // 'https://t.me/...'
-  whatsapp: null,       // 'https://wa.me/7...'
-  max: null,            // ссылка на MAX
-  hours: null,          // 'ежедневно 8:00–21:00'
-  address: null,        // адрес офиса или «выезд по городу, без офиса»
-  geo: null,            // { lat: 56.8389, lon: 60.6057 } для карты и schema.org
+  phone: demo(null, '+7 (343) 000-00-00'),
+  phoneE164: demo(null, '+73430000000'),
+  email: demo(null, 'info@example.ru'),        // почта для клиентов
+  telegram: demo(null, 'https://t.me/'),
+  whatsapp: demo(null, 'https://wa.me/'),
+  max: demo(null, 'https://max.ru/'),
+  hours: demo(null, 'ежедневно 8:00–22:00'),
+  address: demo(null, 'работаем на выезде по Екатеринбургу'),
+  geo: null,                                   // { lat, lon } офиса, если он есть
 };
 
 // ИП на УСН (ответ заказчика 2026-11-25).
 export const LEGAL = {
   form: 'ИП',
-  fullName: null,       // 'Индивидуальный предприниматель Иванов Иван Иванович'
-  inn: null,
-  ogrnip: null,
-  address: null,        // адрес регистрации ИП (можно без квартиры — уточнить с юристом)
+  fullName: demo(null, 'ИП Фамилия Имя Отчество'),
+  inn: demo(null, '000000000000'),
+  ogrnip: demo(null, '000000000000000'),
+  address: demo(null, 'г. Екатеринбург'),
   tax: 'УСН, без НДС',
-  rknNumber: null,      // номер в реестре операторов ПДн Роскомнадзора
+  rknNumber: demo(null, 'будет после подачи уведомления'),
 };
 
-// Зона выезда. Пригороды и доплата — от заказчика.
 export const AREA = {
   city: 'Екатеринбург',
-  suburbs: null,        // ['Верхняя Пышма', 'Берёзовский', ...]
-  suburbFee: null,      // 'от 500 ₽' или правило
-  minOrder: null,       // минимальный заказ, ₽
+  suburbs: demo(null, ['Верхняя Пышма', 'Берёзовский', 'Арамиль', 'Среднеуральск', 'Сысерть', 'Кольцово', 'Большой Исток', 'Растущий']),
+  suburbFee: demo(null, 'от 500 ₽, точнее — по расстоянию'),
+  minOrder: demo(null, 4000),                  // как у «Трёх Сестёр»
 };
 
-// Интеграции. Ключи и ID не секретные, но всё равно задаются через окружение.
 export const INTEGRATIONS = {
   metrikaId: process.env.PUBLIC_METRIKA_ID || null,
-  leadEndpoint: process.env.PUBLIC_LEAD_ENDPOINT || null,       // HTTP-триггер Cloud Function
-  smartCaptchaKey: process.env.PUBLIC_SMARTCAPTCHA_KEY || null, // клиентский ключ SmartCaptcha
+  leadEndpoint: process.env.PUBLIC_LEAD_ENDPOINT || null,
+  smartCaptchaKey: process.env.PUBLIC_SMARTCAPTCHA_KEY || null,
 };
 
-export const SITE_MODE = process.env.SITE_MODE === 'production' ? 'production' : 'preview';
 export const SITE_URL = process.env.SITE_URL || 'https://example.ru';
 export const UPDATED = '2026-11-25';

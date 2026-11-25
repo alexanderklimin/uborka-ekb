@@ -1,16 +1,31 @@
 ---
 import Base from '../layouts/Base.astro';
 import Todo from '../components/Todo.astro';
+import Icon from '../components/Icon.astro';
 import { BRAND_NAME } from '../data/site.js';
+import { ABOUT, ADVANTAGES } from '../data/content.js';
 ---
 <Base title={`О компании ${BRAND_NAME}`} description="Кто мы, кто убирает, какие средства и оборудование используем."
   crumbs={[{ name: 'Главная', path: '/' }, { name: 'О компании', path: '/o-kompanii/' }]}>
-  <div class="wrap">
+  <div class="wrap page">
     <h1>О компании</h1>
-    <Todo inline={false} label="История в 3–5 предложениях от владельца: кто, с какого года, почему (без выдуманных цифр)" />
-    <h2>Команда</h2>
-    <Todo inline={false} label="Фото настоящей команды (с согласия людей на публикацию)" />
-    <h2>Средства и оборудование</h2>
-    <Todo inline={false} label="Чем работаем: пылесосы, парогенератор, химия (марки), гипоаллергенные средства?" />
+    <p class="page-lead">{ABOUT.story ?? <Todo label="история от владельца, 3–5 предложений" />}</p>
+    <Todo quiet label="Фото настоящей команды" />
+    {ADVANTAGES && <ul class="about-adv">{ADVANTAGES.map(([icon, title, text]) => <li><Icon name={icon} size={22} /><span><b>{title}</b>{text}</span></li>)}</ul>}
+    <h2>Чем работаем</h2>
+    {ABOUT.equipment
+      ? <ul class="equip">{ABOUT.equipment.map((e) => <li><Icon name="check" size={18} /> {e}</li>)}</ul>
+      : <Todo inline={false} label="оборудование и химия" />}
   </div>
 </Base>
+<style>
+  .page { padding-top: 24px; }
+  .page-lead { font-size: 20px; color: var(--muted); max-width: 760px; }
+  .about-adv { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; list-style: none; padding: 0; margin: 32px 0 0; }
+  .about-adv li { display: flex; gap: 14px; border: 1px solid var(--line); border-radius: var(--r); padding: 22px; }
+  .about-adv .icon { color: var(--primary); margin-top: 2px; }
+  .about-adv span { display: flex; flex-direction: column; color: var(--muted); font-size: 15px; }
+  .about-adv b { color: var(--ink); font-size: 17px; }
+  .equip { list-style: none; padding: 0; } .equip li { display: flex; gap: 10px; margin: 10px 0; } .equip .icon { color: var(--primary); margin-top: 3px; }
+  @media (max-width: 700px) { .about-adv { grid-template-columns: 1fr; } }
+</style>

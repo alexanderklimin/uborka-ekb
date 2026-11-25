@@ -1,9 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
 import Todo from '../components/Todo.astro';
+import Icon from '../components/Icon.astro';
 import Calculator from '../components/Calculator.astro';
 import { SERVICES, serviceBySlug, priceFrom } from '../data/services.js';
 import { BRAND_NAME, AREA } from '../data/site.js';
+import { ADVANTAGES } from '../data/content.js';
 import { service as serviceLd, faqPage } from '../lib/seo.js';
 import { rub } from '../lib/format.js';
 
@@ -15,7 +17,15 @@ const site = Astro.site!.href.replace(/\/$/, '');
 const url = new URL(`/${s.slug}/`, Astro.site).href;
 const from = priceFrom(s);
 const p = s.price ?? {};
-const roomRows = p.rooms ? [1, 2, 3].map((n) => ({ label: `${n}-комнатная`, value: p.rooms[n] })) : [];
+const cap = (t: string) => t[0].toUpperCase() + t.slice(1);
+type Row = { label: string; value: string | null; todo: string };
+const rows: Row[] = [
+  ...(p.rooms ? [1, 2, 3].map((n) => ({ label: `${n}-комнатная квартира`, value: p.rooms[n] != null ? `от ${rub(p.rooms[n])}` : null, todo: 'цена' })) : []),
+  ...('perM2' in p ? [{ label: p.rooms ? 'Большие квартиры, за 1 м²' : 'За 1 м²', value: p.perM2 != null ? `от ${rub(p.perM2)}` : null, todo: 'цена за м²' }] : []),
+  ...(p.unit ? [{ label: cap(p.unit.label), value: p.unit.price != null ? `от ${rub(p.unit.price)}` : null, todo: 'цена' }] : []),
+  ...('balcony' in p ? [{ label: 'Балкон или лоджия', value: p.balcony != null ? `от ${rub(p.balcony)}` : null, todo: 'цена' }] : []),
+  ...('subscription' in p ? [{ label: 'Регулярная уборка', value: p.subscription ?? null, todo: 'условия абонемента' }] : []),
+];
 const related = s.related.map(serviceBySlug).filter(Boolean);
 ---
 <Base
@@ -25,91 +35,157 @@ const related = s.related.map(serviceBySlug).filter(Boolean);
   crumbs={[{ name: 'Главная', path: '/' }, { name: s.short, path: `/${s.slug}/` }]}
   jsonLd={[serviceLd({ site, brand: BRAND_NAME, name: s.h1, description: s.description, url, price: from }), faqPage(s.faq)]}
 >
-  <div class="wrap">
-    <section class="svc-hero">
-      <h1>{s.h1}</h1>
-      <p class="price-from">
-        {from ? <>от {rub(from.value)}{from.suffix}</> : <Todo label="Цена «от»" />}
-      </p>
-      <p class="lead-text">{s.intro}</p>
-      <div class="svc-facts">
-        <span>Длительность: {s.duration ?? <Todo label="сколько часов" />}</span>
-        <span>Бригада: {s.team ?? <Todo label="сколько человек" />}</span>
-        <span>Средства и инвентарь: наши</span>
+  <section class="svc-hero">
+    <div class="wrap svc-hero-grid">
+      <div>
+        <span class="eyebrow"><Icon name={s.icon} size={16} /> {s.short}</span>
+        <h1>{s.h1}</h1>
+        <p class="lead-text">{s.intro}</p>
+        <ul class="facts">
+          <li><Icon name="clock" size={18} /><span><small>Длительность</small>{s.duration ?? <Todo label="часы" />}</span></li>
+          <li><Icon name="users" size={18} /><span><small>Бригада</small>{s.team ?? <Todo label="человек" />}</span></li>
+          <li><Icon name="spray-can" size={18} /><span><small>Средства</small>наши</span></li>
+        </ul>
       </div>
-      <a class="btn" href="#zayavka">Оставить заявку</a>
-      <a class="btn btn-ghost" href="#kalkulyator">Рассчитать стоимость</a>
+      <aside class="buy-card">
+        <span class="buy-label">Стоимость</span>
+        <span class="buy-price">{from ? <>от {rub(from.value)}<small>{from.suffix}</small></> : <Todo label="цена «от»" />}</span>
+        <a class="btn btn-cta" href="#zayavka">Оставить заявку</a>
+        <a class="btn btn-ghost" href="#kalkulyator"><Icon name="calculator" size={18} /> Рассчитать</a>
+        <span class="buy-note">Цену подтверждаем до выезда</span>
+      </aside>
+    </div>
+  </section>
+
+  <div class="wrap">
+    {s.draft && <Todo quiet label="Состав работ и ответы — черновик, согласовать с заказчиком" />}
+
+    <section class="block">
+      <h2>Цены</h2>
+      <div class="price-rows">
+        {rows.map((r) => <div class="price-row"><span>{r.label}</span><b>{r.value ?? <Todo label={r.todo} />}</b></div>)}
+      </div>
+      <p class="muted">Минимальный заказ — {AREA.minOrder != null ? rub(AREA.minOrder) : <Todo label="сумма" />}. Выезд за город — {AREA.suburbFee ?? <Todo label="условия" />}.</p>
     </section>
 
-    {s.draft && <Todo inline={false} label="Состав работ и ответы — черновик. Проверить с заказчиком: что делаем, что нет." />}
-
-    <h2>Цены</h2>
-    <table class="prices">
-      <tbody>
-        {roomRows.map((r) => <tr><td>{r.label}</td><td>{r.value != null ? `от ${rub(r.value)}` : <Todo label="цена" />}</td></tr>)}
-        {'perM2' in p && <tr><td>За 1 м²</td><td>{p.perM2 != null ? `от ${rub(p.perM2)}` : <Todo label="цена за м²" />}</td></tr>}
-        {p.unit && <tr><td>{p.unit.label[0].toUpperCase() + p.unit.label.slice(1)}</td><td>{p.unit.price != null ? `от ${rub(p.unit.price)}` : <Todo label="цена" />}</td></tr>}
-        {'balcony' in p && <tr><td>Балкон или лоджия</td><td>{p.balcony != null ? `от ${rub(p.balcony)}` : <Todo label="цена" />}</td></tr>}
-        {'subscription' in p && <tr><td>Абонемент</td><td>{p.subscription ?? <Todo label="условия абонемента" />}</td></tr>}
-        {'monthly' in p && <tr><td>Регулярная уборка, в месяц</td><td>{p.monthly != null ? `от ${rub(p.monthly)}` : <Todo label="цена в месяц" />}</td></tr>}
-      </tbody>
-    </table>
-    <p class="muted">Минимальный заказ: {AREA.minOrder != null ? rub(AREA.minOrder) : <Todo label="сумма" />}. Выезд за город: {AREA.suburbFee ?? <Todo label="условия" />}.</p>
-
-    <h2>Что входит</h2>
-    <div class="checklist">
-      {s.checklist.map((block) => (
-        <div class="check-block">
-          <h3>{block.area}</h3>
-          {block.items ? <ul>{block.items.map((i) => <li>{i}</li>)}</ul> : <Todo inline={false} label="состав работ" />}
+    <section class="block">
+      <h2>Что входит</h2>
+      <div class="checklist">
+        {s.checklist.map((block) => (
+          <div class="check-block">
+            <h3>{block.area}</h3>
+            {block.items
+              ? <ul>{block.items.map((i) => <li><Icon name="check" size={18} /><span>{i}</span></li>)}</ul>
+              : <Todo inline={false} label="состав работ" />}
+          </div>
+        ))}
+      </div>
+      {s.notIncluded && (
+        <div class="not-included">
+          <b>Не входит:</b> {s.notIncluded.join('; ')}.
         </div>
-      ))}
-    </div>
-    <h3>Не входит</h3>
-    {s.notIncluded ? <ul class="not-included">{s.notIncluded.map((i) => <li>{i}</li>)}</ul> : <Todo inline={false} label="что не входит" />}
+      )}
+    </section>
 
-    <Calculator selected={s.slug} />
+    {ADVANTAGES && (
+      <section class="block">
+        <ul class="adv-mini">{ADVANTAGES.map(([icon, title]) => <li><Icon name={icon} size={20} /> {title}</li>)}</ul>
+      </section>
+    )}
+  </div>
 
-    <h2>Фото работ</h2>
-    <Todo inline={false} label="3–5 фото «до/после» с наших объектов (не стоковые)" />
+  <section class="section section-soft">
+    <div class="wrap"><Calculator selected={s.slug} /></div>
+  </section>
 
-    <h2>Отзывы</h2>
-    <Todo inline={false} label="Настоящие отзывы со ссылками на Яндекс Карты / 2ГИС. Не выдумывать." />
+  <div class="wrap">
+    <Todo quiet label="Фото «до/после» с наших объектов" />
+    <Todo quiet label="Отзывы по услуге со ссылками на Карты/2ГИС" />
 
-    <h2>Вопросы и ответы</h2>
-    <div class="faq">
-      {s.faq.map(({ q, a }) => (
-        <details>
-          <summary>{q}</summary>
-          {a ? <p>{a}</p> : <Todo inline={false} label="ответ" />}
-        </details>
-      ))}
-    </div>
+    <section class="block">
+      <h2>Вопросы и ответы</h2>
+      <div class="faq">
+        {s.faq.map(({ q, a }) => (
+          <details>
+            <summary>{q}<Icon name="chevron-down" size={20} /></summary>
+            {a ? <p>{a}</p> : <Todo inline={false} label="ответ" />}
+          </details>
+        ))}
+      </div>
+    </section>
 
     {related.length > 0 && (
-      <>
+      <section class="block">
         <h2>Ещё может пригодиться</h2>
-        <ul class="related">{related.map((r) => <li><a href={`/${r.slug}/`}>{r.short}</a></li>)}</ul>
-      </>
+        <div class="related">
+          {related.map((r) => (
+            <a href={`/${r.slug}/`}><span class="rel-icon"><Icon name={r.icon} size={22} /></span><span><b>{r.short}</b><small>{r.lead}</small></span><Icon name="arrow-right" size={18} /></a>
+          ))}
+        </div>
+      </section>
     )}
   </div>
 </Base>
 
 <style>
-  .svc-hero { padding: 24px 0 8px; }
-  .price-from { font-size: 28px; font-weight: 800; color: var(--c-accent); margin: 0 0 12px; }
-  .lead-text { font-size: 19px; max-width: 760px; }
-  .svc-facts { display: flex; flex-wrap: wrap; gap: 8px 20px; color: var(--c-muted); font-size: 15px; margin: 16px 0 20px; }
-  .svc-hero .btn { margin: 0 8px 8px 0; }
-  .prices { border-collapse: collapse; width: 100%; max-width: 560px; }
-  .prices td { padding: 10px 0; border-bottom: 1px solid var(--c-line); }
-  .prices td:last-child { text-align: right; font-weight: 700; }
-  .muted { color: var(--c-muted); font-size: 15px; }
-  .checklist { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
-  .check-block { background: var(--c-soft); border-radius: var(--r); padding: 16px 20px; }
-  .check-block ul, .not-included { padding-left: 20px; margin: 0; }
-  .check-block li { margin: 4px 0; }
-  .faq details { border-bottom: 1px solid var(--c-line); padding: 12px 0; }
-  .faq summary { font-weight: 600; cursor: pointer; }
-  .related { display: flex; flex-wrap: wrap; gap: 8px 20px; padding: 0; list-style: none; }
+  .svc-hero { padding: 24px 0 48px; background: radial-gradient(800px 360px at 90% 0%, #d6f1eb 0%, transparent 60%), #fbfdfc; border-bottom: 1px solid var(--line); }
+  .svc-hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 48px; align-items: center; padding-top: 16px; }
+  .lead-text { font-size: 19px; color: var(--muted); max-width: 640px; }
+  .facts { display: flex; flex-wrap: wrap; gap: 12px; list-style: none; padding: 0; margin: 24px 0 0; }
+  .facts li { display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 10px 16px; font-weight: 700; }
+  .facts .icon { color: var(--primary); }
+  .facts span { display: flex; flex-direction: column; line-height: 1.25; }
+  .facts small { font-size: 12px; color: var(--muted); font-weight: 600; }
+
+  .buy-card { display: flex; flex-direction: column; gap: 10px; background: #fff; border: 1px solid var(--line); border-radius: 24px; padding: 28px; box-shadow: var(--shadow-lg); }
+  .buy-label { font-size: 14px; color: var(--muted); font-weight: 600; }
+  .buy-price { font-size: 36px; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; margin-bottom: 8px; }
+  .buy-price small { font-size: 16px; font-weight: 600; color: var(--muted); margin-left: 4px; }
+  .buy-note { font-size: 13px; color: var(--muted); text-align: center; }
+
+  .block { margin-top: 56px; }
+  .block h2 { margin-top: 0; }
+  .price-rows { max-width: 720px; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+  .price-row { display: flex; justify-content: space-between; gap: 16px; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+  .price-row:nth-child(even) { background: var(--soft); }
+  .price-row:last-child { border-bottom: 0; }
+  .price-row b { white-space: nowrap; }
+  .muted { color: var(--muted); font-size: 15px; }
+
+  .checklist { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .check-block { border: 1px solid var(--line); border-radius: var(--r); padding: 24px; }
+  .check-block ul { list-style: none; padding: 0; margin: 0; }
+  .check-block li { display: flex; gap: 10px; margin: 10px 0; line-height: 1.45; }
+  .check-block li .icon { color: var(--primary); margin-top: 2px; }
+  .not-included { margin-top: 16px; background: #fff6f2; border-radius: var(--r-sm); padding: 14px 18px; color: #7a3b22; font-size: 15px; }
+
+  .adv-mini { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; padding: 0; margin: 0; }
+  .adv-mini li { display: inline-flex; align-items: center; gap: 8px; background: var(--mint); color: var(--primary-dark); font-weight: 700; padding: 10px 16px; border-radius: 999px; font-size: 15px; }
+
+  .faq { max-width: 860px; }
+  .faq details { border-bottom: 1px solid var(--line); }
+  .faq summary { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 0; font-weight: 700; font-size: 18px; cursor: pointer; list-style: none; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary .icon { color: var(--muted); transition: transform .2s; }
+  .faq details[open] summary .icon { transform: rotate(180deg); }
+  .faq details p { margin: 0 0 20px; color: var(--muted); }
+
+  .related { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+  .related a { display: flex; align-items: center; gap: 14px; padding: 18px; border: 1px solid var(--line); border-radius: var(--r); text-decoration: none; color: var(--ink); transition: box-shadow .18s; }
+  .related a:hover { box-shadow: var(--shadow-lg); }
+  .related a > span:nth-child(2) { display: flex; flex-direction: column; flex: 1; }
+  .related small { color: var(--muted); font-size: 14px; }
+  .rel-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--mint); color: var(--primary); flex: none; }
+
+  @media (max-width: 900px) {
+    .svc-hero-grid { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  }
+  @media (max-width: 560px) {
+    .block { margin-top: 40px; }
+    .lead-text { font-size: 17px; }
+    .buy-card { padding: 20px; }
+    .price-row { padding: 14px 16px; font-size: 15px; }
+    .check-block { padding: 18px; }
+    .faq summary { font-size: 16px; }
+  }
 </style>

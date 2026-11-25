@@ -1,9 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
 import Todo from '../components/Todo.astro';
+import Icon from '../components/Icon.astro';
 import Calculator from '../components/Calculator.astro';
 import { SERVICES, serviceBySlug, priceFrom } from '../data/services.js';
-import { BRAND, BRAND_NAME, CONTACTS, LEGAL, AREA } from '../data/site.js';
+import { BRAND_NAME, CONTACTS, LEGAL, AREA } from '../data/site.js';
+import { ADVANTAGES, PROCESS, HERO_POINTS } from '../data/content.js';
 import { localBusiness } from '../lib/seo.js';
 import { rub } from '../lib/format.js';
 const site = Astro.site!.href.replace(/\/$/, '');
@@ -14,81 +16,197 @@ const flat = [serviceBySlug('podderzhivayushchaya-uborka'), serviceBySlug('gener
   description="Поддерживающая и генеральная уборка квартир, уборка после ремонта, мытьё окон, офисы и коттеджи в Екатеринбурге. Цена за квартиру заранее, калькулятор, договор."
   jsonLd={[localBusiness({ site, brand: BRAND_NAME, contacts: CONTACTS, legal: LEGAL, area: AREA })]}
 >
-  <div class="wrap">
-    <section class="hero">
-      <h1>Уборка квартир и офисов в Екатеринбурге</h1>
-      <p class="hero-sub">Называем цену за квартиру до выезда. Приезжаем со своими средствами и инвентарём. Если что-то не понравится — переуберём.</p>
-      <div class="hero-cta">
-        <a class="btn" href="#zayavka">Оставить заявку</a>
-        <a class="btn btn-ghost" href="#kalkulyator">Рассчитать стоимость</a>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-text">
+        <span class="eyebrow"><Icon name="map-pin" size={16} /> Екатеринбург и пригороды</span>
+        <h1>Уборка квартир и офисов <span class="accent">без сюрпризов в цене</span></h1>
+        <p class="hero-sub">Называем стоимость до выезда, приезжаем со своими средствами и инвентарём. Вы проверяете результат — и только потом платите.</p>
+        <div class="hero-cta">
+          <a class="btn btn-cta" href="#zayavka">Оставить заявку</a>
+          <a class="btn btn-ghost" href="#kalkulyator"><Icon name="calculator" size={18} /> Рассчитать стоимость</a>
+        </div>
+        <ul class="hero-points">
+          {HERO_POINTS ? HERO_POINTS.map((t) => <li><Icon name="check" size={18} /> {t}</li>) : <li><Todo label="условия: предоплата, договор" /></li>}
+          <li><Icon name="check" size={18} /> {CONTACTS.hours ?? <Todo label="часы работы" />}</li>
+        </ul>
       </div>
-    </section>
 
-    <h2>Цена за квартиру</h2>
-    <table class="room-prices">
-      <thead><tr><th></th><th>1-комн.</th><th>2-комн.</th><th>3-комн.</th></tr></thead>
-      <tbody>
-        {flat.map((s) => (
-          <tr>
-            <th scope="row"><a href={`/${s.slug}/`}>{s.short}</a></th>
-            {[1, 2, 3].map((n) => <td>{s.price.rooms[n] != null ? `от ${rub(s.price.rooms[n])}` : <Todo label="цена" />}</td>)}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-
-    <h2>Услуги</h2>
-    <div class="cards">
-      {SERVICES.map((s) => {
-        const from = priceFrom(s);
-        return (
-          <a class="card" href={`/${s.slug}/`}>
-            <span class="card-title">{s.short}</span>
-            <span class="card-price">{from ? `от ${rub(from.value)}${from.suffix}` : <Todo label="цена" />}</span>
-          </a>
-        );
-      })}
+      <div class="price-card">
+        <div class="price-card-head">
+          <span>Цена за квартиру</span>
+          <span class="price-card-badge">фиксированная</span>
+        </div>
+        <table>
+          <thead><tr><th></th><th>1-комн.</th><th>2-комн.</th><th>3-комн.</th></tr></thead>
+          <tbody>
+            {flat.map((s) => (
+              <tr>
+                <th scope="row"><a href={`/${s.slug}/`}>{s.short.replace(' уборка', '')}</a></th>
+                {[1, 2, 3].map((n) => <td>{s.price.rooms[n] != null ? rub(s.price.rooms[n]) : <Todo label="цена" />}</td>)}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <a class="price-card-link" href="/ceny/">Все цены <Icon name="arrow-right" size={16} /></a>
+      </div>
     </div>
+  </section>
 
-    <Calculator />
+  <section class="adv">
+    <div class="wrap">
+      {ADVANTAGES
+        ? <ul class="adv-grid">{ADVANTAGES.map(([icon, title, text]) => (
+            <li><span class="adv-icon"><Icon name={icon} size={22} /></span><b>{title}</b><span>{text}</span></li>
+          ))}</ul>
+        : <Todo inline={false} label="Преимущества: только подтверждённые факты (цена до выезда, оплата после, гарантия переуборки…)" />}
+    </div>
+  </section>
 
-    <h2>Как мы работаем</h2>
-    <ol class="steps">
-      <li><b>Заявка.</b> Звоните, пишите в мессенджер или оставьте заявку на сайте.</li>
-      <li><b>Цена заранее.</b> Уточняем площадь и пожелания, называем стоимость до выезда.</li>
-      <li><b>Уборка.</b> Приезжаем в согласованное время со своими средствами и инвентарём.</li>
-      <li><b>Приёмка.</b> Вы проверяете результат и оплачиваете после уборки.</li>
-    </ol>
-    <Todo inline={false} label="Подтвердить порядок работы: оплата после уборки? предоплата? как передаём ключи?" />
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Услуги</h2>
+        <p>Одна услуга — одна понятная цена и чек-лист работ. Выберите, что нужно.</p>
+      </div>
+      <div class="cards">
+        {SERVICES.map((s) => {
+          const from = priceFrom(s);
+          return (
+            <a class="card" href={`/${s.slug}/`}>
+              <span class="card-icon"><Icon name={s.icon} size={26} /></span>
+              <span class="card-title">{s.short}</span>
+              <span class="card-lead">{s.lead}</span>
+              <span class="card-foot">
+                <span class="card-price">{from ? `от ${rub(from.value)}${from.suffix}` : <Todo label="цена" />}</span>
+                <span class="card-arrow"><Icon name="arrow-right" size={18} /></span>
+              </span>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  </section>
 
-    <h2>Почему нам доверяют</h2>
-    <Todo inline={false} label="Только факты от заказчика: фото команды, своё оборудование, гарантия переуборки (срок), договор, ответственность за имущество. Без «N лет на рынке», пока заказчик не подтвердит." />
+  <section class="section section-soft">
+    <div class="wrap">
+      <Calculator />
+    </div>
+  </section>
 
-    <h2>Отзывы</h2>
-    <Todo inline={false} label="Настоящие отзывы + ссылки на карточки в Яндекс Картах и 2ГИС" />
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head"><h2>Как мы работаем</h2></div>
+      {PROCESS
+        ? <ol class="steps">{PROCESS.map(([icon, title, text], i) => (
+            <li><span class="step-num">{i + 1}</span><b>{title}</b><span>{text}</span></li>
+          ))}</ol>
+        : <Todo inline={false} label="Порядок работы: оплата после уборки? предоплата? ключи?" />}
+    </div>
+  </section>
 
-    <h2>Куда выезжаем</h2>
-    <p>Работаем по всему Екатеринбургу. Пригороды: {AREA.suburbs ? AREA.suburbs.join(', ') : <Todo label="список пригородов" />}. Выезд за город: {AREA.suburbFee ?? <Todo label="условия" />}.</p>
-  </div>
+  <section class="section section-soft">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Отзывы</h2>
+        <p>Публикуем только настоящие отзывы — со ссылками на Яндекс Карты и 2ГИС, где их можно проверить.</p>
+      </div>
+      <div class="reviews-empty">
+        <Icon name="star" size={28} />
+        <p>Отзывы появятся здесь после первых заказов. Будем рады, если вы станете первым.</p>
+      </div>
+      <Todo quiet label="Отзывы с Яндекс Карт / 2ГИС" />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap area">
+      <div>
+        <h2>Куда выезжаем</h2>
+        <p>Работаем по всему Екатеринбургу. Выезд за город: {AREA.suburbFee ?? <Todo label="условия" />}.</p>
+      </div>
+      <ul class="area-chips">
+        <li class="chip-strong"><Icon name="map-pin" size={16} /> Екатеринбург</li>
+        {AREA.suburbs ? AREA.suburbs.map((s) => <li>{s}</li>) : <li><Todo label="пригороды" /></li>}
+      </ul>
+    </div>
+  </section>
 </Base>
 
 <style>
-  .hero { padding: 32px 0 8px; }
-  .hero-sub { font-size: 20px; max-width: 720px; color: var(--c-muted); }
-  .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
-  .room-prices { border-collapse: collapse; width: 100%; max-width: 720px; }
-  .room-prices th, .room-prices td { padding: 12px 8px; border-bottom: 1px solid var(--c-line); text-align: left; }
-  .room-prices td { font-weight: 700; }
-  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
-  .card { display: flex; flex-direction: column; gap: 6px; padding: 18px; border: 1px solid var(--c-line); border-radius: var(--r); text-decoration: none; color: var(--c-text); }
-  .card:hover { border-color: var(--c-accent); }
-  .card-title { font-weight: 700; font-size: 18px; }
-  .card-price { color: var(--c-accent); font-weight: 600; }
-  .steps { padding-left: 20px; } .steps li { margin: 8px 0; }
+  .hero { position: relative; overflow: hidden; padding: 64px 0 56px; background:
+    radial-gradient(900px 420px at 85% 10%, #d6f1eb 0%, transparent 60%),
+    radial-gradient(700px 380px at 0% 100%, #fff1e9 0%, transparent 60%), #fbfdfc; }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 56px; align-items: center; }
+  .accent { color: var(--primary); }
+  .hero-sub { font-size: 20px; color: var(--muted); max-width: 560px; margin: 0 0 28px; }
+  .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .hero-points { display: flex; flex-wrap: wrap; gap: 8px 20px; list-style: none; padding: 0; margin: 28px 0 0; font-weight: 600; font-size: 15px; }
+  .hero-points li { display: inline-flex; align-items: center; gap: 6px; }
+  .hero-points .icon { color: var(--primary); }
+
+  .price-card { background: #fff; border-radius: 24px; padding: 28px; box-shadow: var(--shadow-lg); border: 1px solid var(--line); }
+  .price-card-head { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 20px; margin-bottom: 12px; }
+  .price-card-badge { font-size: 12px; font-weight: 700; color: var(--primary); background: var(--mint); padding: 4px 10px; border-radius: 999px; }
+  .price-card table { width: 100%; border-collapse: collapse; }
+  .price-card th, .price-card td { padding: 14px 4px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  .price-card thead th { font-size: 13px; color: var(--muted); font-weight: 600; }
+  .price-card th[scope='row'] { text-align: left; font-weight: 700; }
+  .price-card th[scope='row'] a { color: var(--ink); text-decoration: none; }
+  .price-card td { font-weight: 800; font-size: 17px; }
+  .price-card-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; font-weight: 700; text-decoration: none; }
+
+  .adv { margin-top: -28px; position: relative; }
+  .adv-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; list-style: none; padding: 0; margin: 0; }
+  .adv-grid li { display: flex; flex-direction: column; gap: 6px; background: #fff; border: 1px solid var(--line); border-radius: var(--r); padding: 22px; box-shadow: var(--shadow); }
+  .adv-grid span:last-child { color: var(--muted); font-size: 15px; line-height: 1.5; }
+  .adv-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--mint); color: var(--primary); margin-bottom: 6px; }
+
+  .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .card { display: flex; flex-direction: column; gap: 8px; padding: 24px; border: 1px solid var(--line); border-radius: var(--r); text-decoration: none; color: var(--ink); background: #fff; transition: transform .18s, box-shadow .18s, border-color .18s; }
+  .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: transparent; }
+  .card-icon { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 14px; background: var(--mint); color: var(--primary); margin-bottom: 8px; }
+  .card-title { font-weight: 800; font-size: 19px; letter-spacing: -.01em; }
+  .card-lead { color: var(--muted); font-size: 15px; line-height: 1.45; flex: 1; }
+  .card-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+  .card-price { font-weight: 800; color: var(--primary); }
+  .card-arrow { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--soft); color: var(--ink); transition: background .18s, color .18s; }
+  .card:hover .card-arrow { background: var(--cta); color: #fff; }
+
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; list-style: none; padding: 0; margin: 0; counter-reset: none; }
+  .steps li { display: flex; flex-direction: column; gap: 8px; position: relative; padding-top: 8px; }
+  .steps span:last-child { color: var(--muted); font-size: 15px; }
+  .step-num { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: var(--primary); color: #fff; font-weight: 800; font-size: 20px; margin-bottom: 8px; box-shadow: 0 0 0 6px var(--mint); }
+  .steps b { font-size: 18px; }
+
+  .reviews-empty { display: flex; align-items: center; gap: 16px; background: #fff; border: 1.5px dashed var(--line); border-radius: var(--r); padding: 28px; color: var(--muted); }
+  .reviews-empty .icon { color: #f5b301; }
+  .reviews-empty p { margin: 0; }
+
+  .area { display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; align-items: center; }
+  .area h2 { margin-top: 0; }
+  .area-chips { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; padding: 0; margin: 0; }
+  .area-chips li { padding: 10px 16px; border-radius: 999px; background: var(--soft); font-weight: 600; font-size: 15px; }
+  .area-chips .chip-strong { background: var(--primary); color: #fff; display: inline-flex; align-items: center; gap: 6px; }
+
+  @media (max-width: 1000px) {
+    .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+    .adv { margin-top: 0; padding-top: 24px; }
+    .adv-grid, .cards, .steps { grid-template-columns: repeat(2, 1fr); }
+    .area { grid-template-columns: 1fr; gap: 20px; }
+  }
   @media (max-width: 560px) {
-    .room-prices { font-size: 13px; }
-    .room-prices th, .room-prices td { padding: 10px 3px; }
-    .room-prices th[scope='row'] { width: 34%; }
-    .room-prices .todo { white-space: normal; }
+    .hero { padding: 36px 0 32px; }
+    .hero-sub { font-size: 17px; }
+    .hero-cta .btn { flex: 1 1 100%; }
+    .price-card { padding: 18px; border-radius: 18px; }
+    .price-card th, .price-card td { padding: 12px 2px; font-size: 13px; }
+    .price-card td { font-size: 14px; }
+    .price-card-head { font-size: 17px; }
+    .adv-grid, .cards, .steps { grid-template-columns: 1fr; }
+    .adv-grid li { flex-direction: row; flex-wrap: wrap; align-items: center; column-gap: 12px; padding: 16px; }
+    .adv-grid li .adv-icon { margin: 0; }
+    .adv-grid li span:last-child { flex-basis: 100%; }
+    .card { padding: 20px; }
   }
 </style>
