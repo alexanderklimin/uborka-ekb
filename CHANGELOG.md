@@ -17,3 +17,4 @@
 - Git: приватный репозиторий alexanderklimin/uborka-ekb, deploy key /root/.ssh/uborka_ekb_deploy (хост github-uborka-ekb). Первый push в main. Превью: Cloudflare Workers Builds (root site, build:preview, wrangler deploy) — подключает пользователь.
 - functions/ → yc-functions/: Cloudflare (wrangler) принимал её за Pages Functions. Первая сборка в Cloudflare упала: не был задан Root directory = site и Build command.
 - wrangler.jsonc перенесён в корень с build.command: превью собирается при пустых Root directory и Build command в панели Cloudflare (проверено dry-run на чистом клоне, wrangler 4.168.0). .nvmrc = 22.
+- Структура как в hojapedia/tallerpedia: Astro и wrangler.jsonc в корне репозитория (папки site/ больше нет), assets ./dist, .node-version 22. `npm run build` = превью (noindex), `npm run build:production` = Yandex Cloud. Workers Builds: команда сборки `npm run build`, деплой `npx wrangler deploy`.

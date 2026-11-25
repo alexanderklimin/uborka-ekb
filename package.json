@@ -8,8 +8,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
-    "build:preview": "SITE_MODE=preview astro build && node scripts/preview-headers.mjs",
+    "build": "SITE_MODE=preview astro build && node scripts/preview-headers.mjs",
     "build:production": "SITE_MODE=production astro build && node scripts/check-placeholders.mjs",
     "check": "node scripts/check-placeholders.mjs",
     "test": "node --test src/lib/*.test.js",

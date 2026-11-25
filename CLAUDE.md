@@ -29,7 +29,7 @@
   - Cloud DNS (тарифицируется отдельно) или DNS регистратора.
   - Документация: https://yandex.cloud/ru/docs/tutorials/web/static/ , https://yandex.cloud/ru/docs/storage/operations/hosting/own-domain , https://yandex.cloud/ru/docs/cdn/tutorials/cdn-hosting/
   - Деплой: `aws s3 sync dist/ s3://<бакет> --endpoint-url=https://storage.yandexcloud.net` (статический ключ сервисного аккаунта в .env) или `yc` CLI. Затем сброс кэша CDN.
-  - Превью (решение пользователя 2026-11-25): GitHub → Cloudflare Pages, сборка `npm run build:preview` (noindex, Disallow: /, X-Robots-Tag через dist/_headers). Форма и Метрика в превью выключены: ПДн через Cloudflare не идут. Боевой сайт — только Yandex Cloud, сборка `npm run build:production` (падает, пока есть заглушки).
+  - Превью (решение пользователя 2026-11-25): GitHub → Cloudflare Pages, сборка `npm run build` (noindex, Disallow: /, X-Robots-Tag через dist/_headers). Форма и Метрика в превью выключены: ПДн через Cloudflare не идут. Боевой сайт — только Yandex Cloud, сборка `npm run build:production` (падает, пока есть заглушки).
 - **Формы.** Object Storage не выполняет серверный код. Заявки отправляем через Yandex Cloud Functions (HTTP-триггер), который пишет в Telegram-бот и/или на почту. Альтернатива — Яндекс Формы во встраиваемом виде. Защита от спама: SmartCaptcha.
 - **Аналитика: Яндекс Метрика** (цели: отправка формы, клик по телефону и мессенджеру, калькулятор) и Вебвизор. Google Analytics и Google Fonts не подключать: это трансграничная передача персональных данных. Шрифты хранить у себя.
 - Код в приватном репозитории GitHub с отдельным deploy key. Секреты Yandex Cloud держать только в .env и в секретах CI.
